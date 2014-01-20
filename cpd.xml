@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd-cpd>
+<duplication lines="21" tokens="282">
+<file line="66" path="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/jsxmtool/generation/SxmGenerationThread.java"/>
+<file line="66" path="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/jsxmtool/generation/SxmTransformationThread.java"/>
+<codefragment>
+<![CDATA[
+        logger.debug("Generating tests for " + p.getSpecificationFile().getName());
+        File testsXML = new File(p.getTestsDirectory() + p.getClassName() + "_test.xml");
+        File jsxmSpec = new File(p.getSpecificationFile().getAbsolutePath());
+        File sxm = new File(p.getTempDirectory() + p.getClassName() + "SXM.java");
+        File sxmBase = new File(p.getTempDirectory() + p.getClassName() + "SXM_base.java");
+        File junitTest = new File(p.getJunitMavenTestPath() + p.getPackageTest() + fileSeparator + p.getClassName()
+                + "JsxmAdapterTest.java");
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        logger.debug("Jsxm model was last modified at : " + jsxmSpec.toString() + " "
+                + sdf.format(jsxmSpec.lastModified()));
+        logger.debug("Tests.xml file was last modified at : " + testsXML.toString() + " "
+                + sdf.format(testsXML.lastModified()));
+        logger.debug("SXM java file was last modified at : " + sxm.toString() + sdf.format(sxm.lastModified()));
+        logger.debug("SXMBase java file was last modified at : " + sxmBase.toString() + " "
+                + sdf.format(sxmBase.lastModified()));
+        logger.debug("Junit java file was last modified at : " + junitTest.toString() + " "
+                + sdf.format(junitTest.lastModified()));
+        
+        if (testsXML.exists()) {
+            if (jsxmSpec.lastModified() < testsXML.lastModified() && sxm.lastModified() < testsXML.lastModified()) {
+]]>
+</codefragment>
+</duplication>
+<duplication lines="159" tokens="113">
+<file line="115" path="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/mojo/CreationMojo.java"/>
+<file line="97" path="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/mojo/PrototypeMojo.java"/>
+<codefragment>
+<![CDATA[
+    private List<String> jsxmList;
+    
+    /**
+     * Sets the namespace used by the jsxm core and by maven-jsxm-plug in. The
+     * default namespace is http://www.jsxm.org/schema. The namespace must be
+     * the same as the namespaces used in the xsd schemas (specification, sets,
+     * definitions). The above namespace is used for the validation, creation
+     * and all the necessary operations needed regarding the xml files.
+     * 
+     * @parameter default-value="http://www.jsxm.org/schema"
+     * @required
+     */
+    private String nameSpace;
+    
+    /**
+     * Sets the console LOGGER level.
+     * 
+     * @parameter default-value="INFO"
+     * @required
+     */
+    private String consoleLoggerLevel;
+    
+    
+    /**
+     * Sets the specName.html file logger level.
+     * 
+     * @parameter default-value="INFO"
+     * @required
+     */
+    private String htmlFileLoggerLevel;
+    
+    
+    /**
+     * Sets the specName.txt file logger level.
+     * 
+     * @parameter default-value="INFO"
+     * @required
+     */
+    private String txtFileLoggerLevel;
+        
+    /** 
+     * By setting ansiSupport to true the application is using ansi
+     * output which produces colorful messages in the console.
+     * This does not affect the output files. 
+     * 
+     * @parameter default-value="false"
+     * @required
+     */
+    private boolean ansiSupport;
+    
+    /** 
+     * Sets the executor for banimation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value="fixedThreadPool"
+     * @required
+     * @since 1.4.7
+     */
+    private String banimationThreadPool;
+    
+    /** 
+     * Sets the executor for compilation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     *  
+     * @parameter default-value="fixedThreadPool"
+     * @required
+     * @since 1.4.7
+     */
+    private String compilationThreadPool;
+    
+    /** 
+     * Sets the executor for sample creation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value="fixedThreadPool"
+     * @required
+     * @since 1.4.7
+     */
+    private String sampleCreationThreadPool;
+    
+    /** 
+     * Sets the executor for external package creation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value="fixedThreadPool"
+     * @required
+     * @since 1.4.7
+     */
+    private String externalPackageCreationThreadPool;
+    
+    /** 
+     * Sets the executor for generation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value="fixedThreadPool"
+     * @required
+     * @since 1.4.7
+     */
+    private String generationThreadPool;
+    
+    /** 
+     * Sets the executor for tranformation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value="fixedThreadPool"
+     * @required
+     * @since 1.4.7
+     */
+    private String transformationThreadPool;
+    
+    /** 
+     * Sets the executor for validation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value="singleFixedThreadPool"
+     * @required
+     * @since 1.4.7
+     */
+    private String validationThreadPool;
+    
+    /* (non-Javadoc)
+     * @see org.apache.maven.plugin.Mojo#execute()
+     */
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        
+        JSXMFacade.getInstance().setMultiThreaded(banimationThreadPool,compilationThreadPool,sampleCreationThreadPool,externalPackageCreationThreadPool,
+                generationThreadPool,transformationThreadPool,validationThreadPool);
+        Various.getInstance().setNameSpace(Namespace.getNamespace(nameSpace));
+        JSXMFacade.getInstance().initiateLogging(consoleLoggerLevel,htmlFileLoggerLevel,txtFileLoggerLevel,ansiSupport);
+        JSXMFacade.getInstance().createSample(jsxmRootDir, jsxmList, testDirectory, javaDirectory);
+]]>
+</codefragment>
+</duplication>
+</pmd-cpd>

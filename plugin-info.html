@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>JSXM Maven Plugin</title>
+		<title>Plugin Documentation | Reflow Maven Skin</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -33,7 +33,7 @@
 <link rel="author" href="http://plus.google.com/+KonstantinosMargaritis/"/>
 	</head>
 
-	<body class="page-index project-jsxm-maven-plugin" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-plugin-info project-jsxm-maven-plugin" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
@@ -80,7 +80,7 @@
 									</li>
 								</ul>
 							</li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Maven documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-submenu">
@@ -99,7 +99,7 @@
 									<li class="dropdown-submenu">
 										<a href="project-reports.html" title="Project Reports">Project Reports </a>
 										<ul class="dropdown-menu">
-											<li><a href="plugin-info.html" title="Plugin Documentation">Plugin Documentation </a></li>
+											<li class="active"><a href="" title="Plugin Documentation">Plugin Documentation </a></li>
 											<li><a href="checkstyle.html" title="Checkstyle">Checkstyle </a></li>
 											<li><a href="surefire-report.html" title="Surefire Report">Surefire Report </a></li>
 											<li><a href="findbugs.html" title="FindBugs Report">FindBugs Report </a></li>
@@ -138,175 +138,171 @@
 				</div>
 			</div>
 		</div>
+		<div>
+			<ul class="breadcrumb">
+				<li><a href="./" title="JSXM">JSXM </a></li>
+				<li class="divider">/</li>
+				<li>Plugin Documentation</li>
+			</ul>
+		</div>
+		<hr class="toc-separator" />
+		<div id="toc-bar" class="navbar">
+			<div class="navbar-inner">
+				<div id="toc-scroll-target" class="container">
+					<ul id="toc" class="nav">
+						<li class="toplevel"><a href="#Plugin_Documentation" title="Plugin Documentation">Plugin Documentation</a></li>
+						<li class="toplevel"><a href="#System_Requirements" title="System Requirements">System Requirements</a></li>
+						<li class="toplevel"><a href="#Usage" title="Usage">Usage</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
 	</header>
 
 	<div class="main-body">
-	<div id="carousel0" class="carousel slide">
-		<div class="carousel-inner">
-			<div class="item active">
-				<img src="images/animator.png" alt="JSXM Animator" />
-				<div class="carousel-caption">
-					<h4 id="Graphical_SXM_Animation">Graphical SXM Animation</h4>  
-<p>Graphical animator for testing the Stream X Machine.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/junitTest.png" alt="JSXM Animator" />
-				<div class="carousel-caption">
-					<h4 id="JUnit_Test_Generation">JUnit Test Generation</h4>  
-<p>JUnit tranformers for generating JUnit tests from the abstract XML tests. PHP and Javascript tranformers will be added soon.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/sampleGeneration.png" alt="Page layouts" />
-				<div class="carousel-caption">
-					<h4 id="Sample_Generation">Sample Generation</h4>  
-<p>Automatic generation of JSXM models for easier integration with existing projects. </p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/validation.png" alt="Modern skin" />
-				<div class="carousel-caption">
-					<h4 id="Model_Validation">Model Validation</h4>  
-<p>JSXM models are validated against XSD schemas to ensure that the specifications match the SXM rules.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/kAnimate.png" alt="Animate list and individual k" />
-				<div class="carousel-caption">
-					<h4 id="Advanced_Configuration">Advanced Configuration</h4>  
-<p>Each JSXM specification can be processed using a different k without affecting the general k or any other specification.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/loggingPool.png" alt="Customizable Threadpools and advanced logging" />
-				<div class="carousel-caption">
-					<h4 id="Advanced_Configuration_cont.">Advanced Configuration cont.</h4>
-				</div>
-			</div>
-		</div>
-		<a class="left carousel-control" href="#carousel0" data-slide="prev">&lsaquo;</a>
-		<a class="right carousel-control" href="#carousel0" data-slide="next">&rsaquo;</a>
-	</div>
-	<div class="row columns columns2">
-		<div class="span6">
-			<h2 id="Usage">Usage</h2>
-<p>To use this Maven plugin, include it in your pom.xml plugins section:</p>
-<div class="source"> 
- <pre>&lt;plugins&gt;
-  ...
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.jsxm.maven.plugin&lt;/groupId&gt;
-                &lt;artifactId&gt;jsxm-maven-plugin&lt;/artifactId&gt;
-                &lt;version&gt;1.4.11-RC1&lt;/version&gt;
-            &lt;/plugin&gt;
-  ...
-&lt;/plugins&gt;
-</pre> 
-</div>
-<div class="section">    
-</div>
-		</div>
-		<div class="span6">
-			<h2 id="POM_Repositories">POM Repositories</h2>
-<p>Add jsxm repository to the repositories in the POM file:</p>
-<div class="source"> 
- <pre>    &lt;pluginRepositories&gt;
-        ...
-        &lt;pluginRepository&gt;
-            &lt;releases&gt;
-                &lt;enabled&gt;true&lt;/enabled&gt;
-                &lt;updatePolicy&gt;always&lt;/updatePolicy&gt;
-                &lt;checksumPolicy&gt;fail&lt;/checksumPolicy&gt;
-            &lt;/releases&gt;
-            &lt;id&gt;jsxm&lt;/id&gt;
-            &lt;name&gt;JSXM Model Based Testing&lt;/name&gt;
-            &lt;url&gt;http://www.jsxm.org/maven2/&lt;/url&gt;
-        &lt;/pluginRepository&gt;
-        ...
-    &lt;/pluginRepositories&gt;
-
-</pre> 
-</div>
-<div class="section">      
-</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="span6">
-			<h2 id="Multi_threaded">Multi threaded</h2>
-<p>JSXM Maven plugin is designed to support different multi-threaded implementations. Taking advantage of the factory and thread pool patterns there is an easy way of switching thread pool implementations by changing the following properties in the pom.xml</p>
-<ul> 
- <li><b>banimationThreadPool</b> - thread pool responsible for the banimation phase</li> 
- <li><b>compilationThreadPool</b> - thread pool responsible for the compilation phase</li> 
- <li><b>sampleCreationThreadPool</b> - thread pool responsible for the sample creation phase</li> 
- <li><b>externalPackageCreationThreadPool</b> - thread pool responsible for the copying external package structure</li> 
- <li><b>generationThreadPool</b> - thread pool responsible for the generation phase</li> 
- <li><b>transformationThreadPool</b> - thread pool responsible for the transformation phase</li> 
- <li><b>validationThreadPool</b> - thread pool responsible for the validation phase</li> 
-</ul>
-<p>**The available options for each thread pool are</p>
-<ul> 
- <li><b>cachedThreadPool</b></li> 
- <li><b>fixedThreadPool</b></li> 
- <li><b>singleFixedThreadPool</b></li> 
- <li><b>singleThreadExecutor</b></li> 
-</ul>
-<div class="section">       
-</div>
-		</div>
-		<div class="span6">
-			<h2 id="Logging_Configuration">Logging Configuration</h2>
-<p>JSXM Maven Plugin uses logback and currently supports 3 different exports. HTML, PDF and txt logs. Each file can have its own logger level, independent from the other files. The available logging levels are: </p>
-<ul> 
- <li><b>WARN</b> - Prints warn messages.</li> 
- <li><b>ERROR</b> - Prints error and warn messages.</li> 
- <li><b>INFO</b> - Prints info, error and warn messages.</li> 
- <li><b>DEBUG</b> - Prints debug, info, error and warn messages.</li> 
- <li><b>TRACE</b> - Prints trace, debug, warn, error and info messages.</li> 
- <li><b>OFF</b> - No logging.</li> 
-</ul>
-<p>The above levels can be used as a text inside the configuration properties below. </p>
-<div class="source"> 
- <pre>    &lt;configuration&gt;
-        ...
-        &lt;consoleLoggerLevel&gt;LOGGING_LEVEL&lt;/consoleLoggerLevel&gt;
-        &lt;htmlFileLoggerLevel&gt;LOGGING_LEVEL&lt;/htmlFileLoggerLevel&gt;
-        &lt;txtFileLoggerLevel&gt;LOGGING_LEVEL&lt;/txtFileLoggerLevel&gt;
-        ...
-    &lt;/configuration&gt;
-
-</pre> 
-</div>
-<p>*Tip: In case you have enough experience in writing JSXM specifications you can just turn off the console and txt logger and let the HTML logger report only errors. </p>
-		</div>
-	</div>
-	<div class="row">
-	</div>
 	<div class="row">
 		<div class="span12">
 			<div class="body-content">
-				<div class="section"> 
- <h2 id="ANSI_Support">ANSI Support</h2> 
- <p>JSXM Maven plugin supports message output using ANSI escape code. By setting the parameter ansiSupport to true, messages in the console will be colorful. The plugin uses a special profile which is triggered when a windows platform is detected in order to download the org.fusesource.jansi library to allow support in a windows terminal in comparison with Unix based platforms that natively support ANSI and do not require any additional library. ANSI is also supported by Netbeans and Eclipse IDE, although the latter requires an extra plugin. </p>  
+<div class="section"> 
+ <div class="page-header">
+  <h2 id="Plugin_Documentation">Plugin Documentation</h2>
+ </div> 
+ <a name="Plugin_Documentation"></a> 
+ <p>Goals available for this plugin:</p> 
+ <table border="0" class="bodyTable table table-striped table-hover"> 
+  <thead> 
+   <tr class="a"> 
+    <th>Goal</th> 
+    <th>Description</th> 
+   </tr> 
+  </thead> 
+  <tbody> 
+   <tr class="b"> 
+    <td><a href="animate-console-mojo.html">jsxm:animate-console</a></td> 
+    <td>Goal which triggers the animation of jsxm specifications using the console for inputs.</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><a href="animate-gui-mojo.html">jsxm:animate-gui</a></td> 
+    <td>Goal which triggers the animation of JSXM specifications using a graphical environment. The GUI offers visual representation of the animation allows easy switch between animating JSXMs.</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><a href="banimate-mojo.html">jsxm:banimate</a></td> 
+    <td>Goal that batch animate the jsxm specifications. The current options are to batch animate specific specifications by declaring them in the configuration section of the plugin in the pom.xml. The second option is by declaring the parameter banimateAll to true in the configuration section of the plugin and as a result to batch animate all the specifications.</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><a href="classpath-mojo.html">jsxm:classpath</a></td> 
+    <td>Goal that adds all the specifications in the build path as class path entries.</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><a href="compile-mojo.html">jsxm:compile</a></td> 
+    <td>Goal that compiles the JSXM specifications. The goal creates all the SXM java files derived from the JSXM model and compiles the java classes. XSD parsing is handled by this goal as well.</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><a href="compile-repast-mojo.html">jsxm:compile-repast</a></td> 
+    <td>Goal that compiles the JSXM specifications and transforms them to Repast agents. The created java classes can be moved directly to the Repast project by providing the repastCopyDirectory property.</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><a href="copy-external-package-mojo.html">jsxm:copy-external-package</a></td> 
+    <td>Goal that copies the java package structure of external java libraries and creates the same structure inside the specification(spec) folder. Finally it adds the new created folders to the build path in order to provide access to specification directly from the package explorer.</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><a href="copy-package-mojo.html">jsxm:copy-package</a></td> 
+    <td>Goal that copies the java package structure of the project and creates the same structure inside the specification(spec) folder. Finally it adds the new created folders to the build path in order to provide access to specification directly from the package explorer.</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><a href="create-prototype-mojo.html">jsxm:create-prototype</a></td> 
+    <td>Goal that creates the spec directory, the additional directories needed for each specification and create the template file of [specName].xml and [specName]_sets.xml. The template includes implementation and adapters for the implementation.</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><a href="create-sample-mojo.html">jsxm:create-sample</a></td> 
+    <td>Goal that creates the spec directory, the additional directories needed for each specification and the template file of [specName].xml and [specName]_sets.xml. The template includes implementation and adapters for the implementation.</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><a href="generate-mojo.html">jsxm:generate</a></td> 
+    <td>Goal that generates the jsxm specification test and transforms them. External implementation support. Java implementation that is not provided in the src folder of the project will use the import of the Adapter as a package, and add the jsxm as root package. External implementation is processed automatically in case local implementation is not found. In case the implementations can not be found by the IDE or is not available in the classpath you should provide it in the classpath in order to be used by the Adapters.</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><a href="help-mojo.html">jsxm:help</a></td> 
+    <td>Display help information on jsxm-maven-plugin.<br /> Call <code>mvn jsxm:help -Ddetail=true -Dgoal=&lt;goal-name&gt;</code> to display parameter details.</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><a href="profile-mojo.html">jsxm:profile</a></td> 
+    <td>Goal that profiles all the specifications of a project using different implementations of thread pools. The goal can be very CPU and MEMORY intensive depending on the configuration. The current goal is dependent in the executions variable. The goal runs each phase of the JSXM tool with 4 different settings. The phases are validate, compile, generate, transform. The setting are: 
+     <div style="margin-left: 2em"> 
+      <i>newFixedThreadPool with all the available processors,</i> newCachedThreadPool, 
+      <i>newSingleThreadExecutor,</i> newFixedThreadPool with one thread. 
+      <div style="margin-left: 2em">
+        Executions should be used with caution due to the fact that too many executions in a very intensive specification can cause huge amounts of IO, resulting in huge log files and make your system unresponsive. An acceptable amount of executions is 4 which is the default number. 
+      </div> 
+     </div></td> 
+   </tr> 
+   <tr class="a"> 
+    <td><a href="validate-mojo.html">jsxm:validate</a></td> 
+    <td>Goal that validates all the XML files that are hanlded by JSXM. JSXM specifications, sets, definitions, inputs, outputs and abstract XML tests are validated against the XSD schemas that are available on www.jsxm.org.</td> 
+   </tr> 
+  </tbody> 
+ </table> 
+ <div class="section"> 
+  <h3 id="System_Requirements">System Requirements</h3> 
+  <a name="System_Requirements"></a> 
+  <p>The following specifies the minimum requirements to run this Maven plugin:</p> 
+  <table border="0" class="bodyTable table table-striped table-hover"> 
+   <tbody> 
+    <tr class="a"> 
+     <td>Maven</td> 
+     <td>2.0</td> 
+    </tr> 
+    <tr class="b"> 
+     <td>JDK</td> 
+     <td>1.7</td> 
+    </tr> 
+    <tr class="a"> 
+     <td>Memory</td> 
+     <td>No minimum requirement.</td> 
+    </tr> 
+    <tr class="b"> 
+     <td>Disk Space</td> 
+     <td>No minimum requirement.</td> 
+    </tr> 
+   </tbody> 
+  </table> 
+ </div> 
+ <div class="section"> 
+  <h3 id="Usage">Usage</h3> 
+  <a name="Usage"></a> 
+  <p>You should specify the version in your project's plugin configuration:</p> 
+  <div class="source"> 
+   <pre>&lt;project&gt;
+  ...
+  &lt;build&gt;
+    &lt;!-- To define the plugin version in your parent POM --&gt;
+    &lt;pluginManagement&gt;
+      &lt;plugins&gt;
+        &lt;plugin&gt;
+          &lt;groupId&gt;org.jsxm.maven.plugin&lt;/groupId&gt;
+          &lt;artifactId&gt;jsxm-maven-plugin&lt;/artifactId&gt;
+          &lt;version&gt;1.4.11-RC1&lt;/version&gt;
+        &lt;/plugin&gt;
+        ...
+      &lt;/plugins&gt;
+    &lt;/pluginManagement&gt;
+    &lt;!-- To use the plugin goals in your POM or parent POM --&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.jsxm.maven.plugin&lt;/groupId&gt;
+        &lt;artifactId&gt;jsxm-maven-plugin&lt;/artifactId&gt;
+        &lt;version&gt;1.4.11-RC1&lt;/version&gt;
+      &lt;/plugin&gt;
+      ...
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  ...
+&lt;/project&gt;
+</pre> 
+  </div> 
+  <p>For more information, see <a class="externalLink" href="http://maven.apache.org/guides/mini/guide-configuring-plugins.html">&quot;Guide to Configuring Plug-ins&quot;</a></p> 
+ </div> 
 </div>
-				<hr />
-				<div class="section"> 
- <h2 id="Graphical_Interface_Animation">Graphical Interface Animation</h2> 
- <p>JSXM Maven plugin has a built in graphical envirnoment for animating JSXM models. The SXM under animation can be reseted at any point and the animation can be saved and used with batch animation processing. The environment is aware of every SXMs current state so switching between SXM instances animation can be safely<br />done without lossing the current animation. </p>  
-</div>
-				<hr />
-				
 			</div>
 		</div>
 	</div>
@@ -322,11 +318,11 @@
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Overview</li>
-						<li class="active">
-							<a href="#" title="Introduction">Introduction </a>
-						</li>
 						<li>
-							<a href="plugin-info.html" title="Goals">Goals </a>
+							<a href="index.html" title="Introduction">Introduction </a>
+						</li>
+						<li class="active">
+							<a href="#" title="Goals">Goals </a>
 						</li>
 						<li>
 							<a href="plugin-info.html#/Usage" title="Usage">Usage </a>
@@ -396,7 +392,51 @@
 							<a href="project-info.html" title="Project Information">Project Information <i class="icon-chevron-right"></i></a>
 						</li>
 						<li>
-							<a href="project-reports.html" title="Project Reports">Project Reports <i class="icon-chevron-right"></i></a>
+							<a href="project-reports.html" title="Project Reports">Project Reports <i class="icon-chevron-down"></i></a>
+							<ul class="nav nav-list">
+						<li class="active">
+							<a href="#" title="Plugin Documentation">Plugin Documentation </a>
+						</li>
+						<li>
+							<a href="checkstyle.html" title="Checkstyle">Checkstyle </a>
+						</li>
+						<li>
+							<a href="surefire-report.html" title="Surefire Report">Surefire Report </a>
+						</li>
+						<li>
+							<a href="findbugs.html" title="FindBugs Report">FindBugs Report </a>
+						</li>
+						<li>
+							<a href="pmd.html" title="PMD Report">PMD Report </a>
+						</li>
+						<li>
+							<a href="cpd.html" title="CPD Report">CPD Report </a>
+						</li>
+						<li>
+							<a href="dependency-updates-report.html" title="Dependency Updates Report">Dependency Updates Report </a>
+						</li>
+						<li>
+							<a href="plugin-updates-report.html" title="Plugin Updates Report">Plugin Updates Report </a>
+						</li>
+						<li>
+							<a href="property-updates-report.html" title="Property Updates Report">Property Updates Report </a>
+						</li>
+						<li>
+							<a href="invoker-report.html" title="Invoker Build Results">Invoker Build Results </a>
+						</li>
+						<li>
+							<a href="changes-report.html" title="Changes Report">Changes Report </a>
+						</li>
+						<li>
+							<a href="dependency-analysis.html" title="Dependency Analysis">Dependency Analysis </a>
+						</li>
+						<li>
+							<a href="changelog.html" title="Change Log">Change Log </a>
+						</li>
+						<li>
+							<a href="dev-activity.html" title="Developer Activity">Developer Activity </a>
+						</li>
+							</ul>
 						</li>
 					</ul>
 				</div>

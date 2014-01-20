@@ -1,0 +1,88 @@
+/* .navbar .brand {
+	display: block;
+	float: left;
+	padding: 0px;
+	margin-left: -150px;
+	font-size: 20px;
+	font-weight: 200;
+	color: #777;
+	text-shadow: 0 1px 0 #fff;
+	width: 150px;
+} */
+
+.navbar .brand img {
+	width: auto\9;
+	height: auto;
+	max-width: 100%;
+	vertical-align: middle;
+	border: 0;
+	-ms-interpolation-mode: bicubic;
+	height:40px;
+}
+
+.navbar .nav.pull-right {
+    float: right;
+    margin-right: 0;
+    margin-top: 10px !important; 
+}
+
+.color-highlight {
+    color: #225E9B;
+}
+
+body {
+    background-image:url(../images/bg.png);
+}
+
+body[class*="page-themes-bootswatch"] {
+    background-image: none;
+}
+
+body[class*="page-themes-bootswatch"] .color-highlight {
+    color: inherit;
+}
+
+.thumbnail-row {
+    margin-top: 10px;
+}
+
+/*h1, */h2 {
+  margin-top: 30px;
+}
+
+h3, h4, h5, h6 {
+  margin-top: 20px;
+}
+
+.carousel-caption a {
+  color: white;
+}
+
+/* A bit of workaround for links being not clickable due to :before element in headings */
+.project-jsxm-maven-plugin.page-index h2[id]:before {
+  height: 30px;
+  margin-top: -30px;
+}
+
+.project-jsxm-maven-plugin.page-index .sidebar {
+  margin-top: 10px;
+}
+
+.project-jsxm-maven-plugin.page-index .sidebar {
+  margin-top: 10px;
+}
+
+.project-jsxm-maven-plugin.page-index .sidebar h3 {
+  margin-top: 10px;
+}
+
+@media (min-width: 980px){
+    .navbar.affix {
+        position: fixed;
+        top: 61px;
+        right: 0;
+        left: 0;
+        z-index: 1020;
+        margin-bottom: 0;
+    }
+}

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JSXMUtils.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.utilities</a> &gt; <span class="el_source">JSXMUtils.java</span></div><h1>JSXMUtils.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.utilities;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.jsxm.maven.plugin.jsxmtool.core.JSXM;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public final class JSXMUtils {
+    
+<span class="nc" id="L63">    private JSXMUtils() {</span>
+<span class="nc" id="L64">    }</span>
+    
+<span class="fc" id="L66">    public static final Logger LOGGER = (Logger) LoggerFactory.getLogger(JSXMUtils.class);</span>
+<span class="fc" id="L67">    public static final String FILE_SEPARATOR = System.getProperty(&quot;file.separator&quot;);</span>
+<span class="fc" id="L68">    public static final String PATH_SEPARATOR = System.getProperty(&quot;path.separator&quot;);</span>
+    
+<span class="fc" id="L70">    private static final Font SMALL_BOLD = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.BOLD);</span>
+<span class="fc" id="L71">    private static final Font CAT_FOND = new Font(Font.FontFamily.TIMES_ROMAN, 18, Font.BOLD);</span>
+<span class="fc" id="L72">    private static final Font SMALL_FOND = new Font(Font.FontFamily.TIMES_ROMAN, 6, Font.NORMAL);</span>
+    
+    /**
+     * Reset class path.
+     */
+    public static void resetClassPath() {
+        try {
+            
+<span class="nc" id="L80">            ClassPathUpdater.add(JSXM.getInstance().getInitialPath());</span>
+<span class="nc" id="L81">            System.setProperty(&quot;java.class.path&quot;, JSXM.getInstance().getInitialPath());</span>
+<span class="nc" id="L82">        } catch (IOException e) {</span>
+<span class="nc" id="L83">            LOGGER.error(&quot;IOException : &quot;, e);</span>
+<span class="nc" id="L84">        } catch (NoSuchMethodException e) {</span>
+<span class="nc" id="L85">            LOGGER.error(&quot;NoSuchMethodException : &quot;, e);</span>
+<span class="nc" id="L86">        } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L87">            LOGGER.error(&quot;IllegalAccessException : &quot;, e);</span>
+<span class="nc" id="L88">        } catch (InvocationTargetException e) {</span>
+<span class="nc" id="L89">            LOGGER.error(&quot;InvocationTargetException : &quot;, e);</span>
+<span class="nc" id="L90">        }</span>
+<span class="nc" id="L91">    }</span>
+    
+    /**
+     * Replace slash with dot.
+     * 
+     * @param beforeReplacement
+     *            the previous string
+     * @return the new string with the replaced character
+     */
+    public static String replaceSlashWithDot(String beforeReplacement) {
+<span class="fc" id="L101">        String afterReplacement = &quot;&quot;;</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if (System.getProperty(&quot;file.separator&quot;).equals(&quot;/&quot;)) {</span>
+<span class="fc" id="L103">            afterReplacement = beforeReplacement.replace('/', '.');</span>
+        } else {
+<span class="nc" id="L105">            afterReplacement = beforeReplacement.replace('\\', '.');</span>
+        }
+<span class="fc" id="L107">        return afterReplacement;</span>
+    }
+    
+    /**
+     * Replace dot with slash.
+     * 
+     * @param beforeReplacement
+     *            the previous string
+     * @return the new string with the replaced character
+     */
+    public static String replaceDotWithSlash(String beforeReplacement) {
+<span class="fc" id="L118">        String afterReplacement = &quot;&quot;;</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        if (System.getProperty(&quot;file.separator&quot;).equals(&quot;/&quot;)) {</span>
+<span class="fc" id="L120">            afterReplacement = beforeReplacement.replace('.', '/');</span>
+        } else {
+<span class="nc" id="L122">            afterReplacement = beforeReplacement.replace('.', '\\');</span>
+        }
+<span class="fc" id="L124">        return afterReplacement;</span>
+    }
+    
+    /**
+     * Read txt write to pdf.
+     * 
+     * @param readFile
+     *            the read file
+     * @param outputFile
+     *            the output file
+     */
+    public static void readTxtWriteToPdf(String readFile, String outputFile, String specificationName) {
+<span class="fc" id="L136">        Path path = Paths.get(readFile).toAbsolutePath();</span>
+        // TODO: Add listener for logback output
+<span class="fc" id="L138">        LOGGER.info(&quot;Txt path : &quot; + path);</span>
+        // TODO: Add listener for logback output
+<span class="fc" id="L140">        Path outputPath = Paths.get(outputFile).toAbsolutePath();</span>
+<span class="fc" id="L141">        LOGGER.info(&quot;Pdf path : &quot; + outputPath);</span>
+<span class="fc" id="L142">        StringBuilder strB = new StringBuilder();</span>
+<span class="fc" id="L143">        Document document = new Document();</span>
+        
+        try {
+<span class="fc" id="L146">            PdfWriter.getInstance(document, new FileOutputStream(outputPath.toFile()));</span>
+<span class="fc" id="L147">            document.open();</span>
+<span class="fc" id="L148">            addMetaData(document, specificationName);</span>
+<span class="fc" id="L149">            Paragraph preface = new Paragraph();</span>
+<span class="fc" id="L150">            addEmptyLine(preface, 1);</span>
+<span class="fc" id="L151">            preface.add(new Paragraph(JSXM.getInstance().getProjectName() + &quot; logs &quot;, CAT_FOND));</span>
+<span class="fc" id="L152">            addEmptyLine(preface, 1);</span>
+<span class="fc" id="L153">            preface.add(new Paragraph(&quot;Report generated by: &quot; + System.getProperty(&quot;user.name&quot;) + &quot;, &quot; + new Date(),</span>
+                    SMALL_BOLD));
+<span class="fc" id="L155">            addEmptyLine(preface, 1);</span>
+<span class="fc" id="L156">            preface.add(new Paragraph(&quot;This document describes all the info, warning and error logs of &quot;</span>
+                    + specificationName, SMALL_BOLD));
+<span class="fc" id="L158">            addEmptyLine(preface, 1);</span>
+<span class="fc" id="L159">            preface.add(new Paragraph(&quot;System variables:&quot;, SMALL_BOLD));</span>
+<span class="fc" id="L160">            preface.add(new Paragraph(&quot;Operating System Name:  &quot; + System.getProperty(&quot;os.name&quot;), SMALL_FOND));</span>
+<span class="fc" id="L161">            preface.add(new Paragraph(&quot;Operating System Architecture:  &quot; + System.getProperty(&quot;os.arch&quot;), SMALL_FOND));</span>
+<span class="fc" id="L162">            preface.add(new Paragraph(&quot;Java version:  &quot; + System.getProperty(&quot;java.version&quot;), SMALL_FOND));</span>
+            
+<span class="fc" id="L164">            document.add(preface);</span>
+            
+<span class="fc" id="L166">            BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);</span>
+<span class="fc" id="L167">            String line = null;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            while ((line = reader.readLine()) != null) {</span>
+<span class="fc" id="L169">                strB.append(line);</span>
+<span class="fc" id="L170">                document.add(new Paragraph(line, SMALL_FOND));</span>
+            }
+<span class="fc" id="L172">            document.close();</span>
+<span class="nc" id="L173">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L174">            LOGGER.error(&quot;File &quot; + outputPath.toFile() + &quot; was not found&quot;, e);</span>
+<span class="nc" id="L175">        } catch (DocumentException e) {</span>
+<span class="nc" id="L176">            LOGGER.error(&quot;Error creating pdf document.!&quot;, e);</span>
+<span class="nc" id="L177">        } catch (IOException e) {</span>
+<span class="nc" id="L178">            LOGGER.error(&quot;Error reading log.txt document.!&quot;, e);</span>
+<span class="pc" id="L179">        }</span>
+<span class="fc" id="L180">    }</span>
+    
+    /**
+     * Adds the meta data.
+     * 
+     * @param document
+     *            the document
+     */
+    private static void addMetaData(Document document, String specificationName) {
+<span class="fc" id="L189">        document.addTitle(&quot;Log for maven build&quot;);</span>
+<span class="fc" id="L190">        document.addKeywords(&quot;maven-jsxm-plugin,&quot; + JSXM.getInstance().getProjectName() + &quot;,&quot; + specificationName);</span>
+<span class="fc" id="L191">        document.addAuthor(System.getProperty(&quot;user.name&quot;));</span>
+<span class="fc" id="L192">        document.addCreator(System.getProperty(&quot;user.name&quot;));</span>
+<span class="fc" id="L193">    }</span>
+    
+    /**
+     * Adds the empty line.
+     * 
+     * @param paragraph
+     *            the paragraph
+     * @param number
+     *            the number
+     */
+    private static void addEmptyLine(Paragraph paragraph, int number) {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">        for (int i = 0; i &lt; number; i++) {</span>
+<span class="fc" id="L205">            paragraph.add(new Paragraph(&quot; &quot;));</span>
+        }
+<span class="fc" id="L207">    }</span>
+    
+    /**
+     * Pdf report.
+     * 
+     * @param pdfReport
+     *            the pdf report
+     * @param extension
+     *            the extension
+     */
+    public static void pdfReport(boolean pdfReport, String extension) {
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        if (pdfReport) {</span>
+<span class="fc" id="L219">            File node = new File(&quot;src/spec/jsxmLogs/&quot;);</span>
+<span class="fc" id="L220">            List&lt;File&gt; txtFiles = new LinkedList&lt;File&gt;();</span>
+<span class="fc" id="L221">            SxmFileUtils.traverseDirectory(node, txtFiles, extension);</span>
+            
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            for (int i = 0; i &lt; txtFiles.size(); i++) {</span>
+<span class="fc" id="L224">                String mdcTxtName = SxmCompilationUtils.extractSourceClass(txtFiles.get(i).getName(),</span>
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH);
+<span class="fc" id="L226">                String txtName = SxmCompilationUtils.extractSourceClass(txtFiles.get(i).getAbsolutePath(),</span>
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH);
+<span class="fc" id="L228">                String pdfName = txtName + &quot;.pdf&quot;;</span>
+<span class="fc" id="L229">                MDC.put(&quot;specificationName&quot;, mdcTxtName);</span>
+<span class="fc" id="L230">                readTxtWriteToPdf(txtFiles.get(i).getAbsolutePath(), pdfName, txtName);</span>
+<span class="fc" id="L231">                MDC.remove(&quot;specificationName&quot;);</span>
+            }
+        }
+<span class="fc" id="L234">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

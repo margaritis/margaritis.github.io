@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>XMLValidationException.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.runtimeexceptions</a> &gt; <span class="el_source">XMLValidationException.java</span></div><h1>XMLValidationException.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.runtimeexceptions;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public class XMLValidationException extends RuntimeException {
+    
+    /**
+     * 
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * 
+     */
+<span class="pc" id="L53">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+    
+    /**
+     * @param message
+     */
+    public XMLValidationException(String message) {
+<span class="fc" id="L59">        super(message);</span>
+<span class="fc" id="L60">        logger.error(&quot;For more information about the errors and possible solutions, please refer to the following article:&quot;);</span>
+        try {
+<span class="fc" id="L62">            logger.error(&quot;&quot;</span>
+                    + new URL(&quot;http://www.jsxm.org/wiki/jsxmMavenPlugin/RuntimeExceptions/&quot;
+                            + this.getClass().getSimpleName()));
+<span class="nc" id="L65">        } catch (MalformedURLException e) {</span>
+<span class="nc" id="L66">            logger.error(&quot;Url of RuntimeException &quot; + this.getClass().getSimpleName() + &quot;is malformed&quot;, e);</span>
+<span class="fc" id="L67">        }</span>
+<span class="fc" id="L68">    }</span>
+    
+    /**
+     * @param cause
+     */
+    public XMLValidationException(Throwable cause) {
+<span class="nc" id="L74">        super(cause);</span>
+<span class="nc" id="L75">        logger.error(&quot;For more information about the errors and possible solutions, please refer to the following article:&quot;);</span>
+        try {
+<span class="nc" id="L77">            logger.error(&quot;&quot;</span>
+                    + new URL(&quot;http://www.jsxm.org/wiki/jsxmMavenPlugin/RuntimeExceptions/&quot;
+                            + this.getClass().getSimpleName()));
+<span class="nc" id="L80">        } catch (MalformedURLException e) {</span>
+<span class="nc" id="L81">            logger.error(&quot;Url of RuntimeException &quot; + this.getClass().getSimpleName() + &quot;is malformed&quot;, e);</span>
+<span class="nc" id="L82">        }</span>
+<span class="nc" id="L83">    }</span>
+    
+    /**
+     * @param message
+     * @param cause
+     */
+    public XMLValidationException(String message, Throwable cause) {
+<span class="nc" id="L90">        super(message, cause);</span>
+<span class="nc" id="L91">        logger.error(&quot;For more information about the errors and possible solutions, please refer to the following article:&quot;);</span>
+        try {
+<span class="nc" id="L93">            logger.error(&quot;&quot;</span>
+                    + new URL(&quot;http://www.jsxm.org/wiki/jsxmMavenPlugin/RuntimeExceptions/&quot;
+                            + this.getClass().getSimpleName()));
+<span class="nc" id="L96">        } catch (MalformedURLException e) {</span>
+<span class="nc" id="L97">            logger.error(&quot;Url of RuntimeException &quot; + this.getClass().getSimpleName() + &quot;is malformed&quot;, e);</span>
+<span class="nc" id="L98">        }</span>
+<span class="nc" id="L99">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

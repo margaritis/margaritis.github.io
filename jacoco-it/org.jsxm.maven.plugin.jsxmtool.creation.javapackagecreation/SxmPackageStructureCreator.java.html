@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmPackageStructureCreator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.creation.javapackagecreation</a> &gt; <span class="el_source">SxmPackageStructureCreator.java</span></div><h1>SxmPackageStructureCreator.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.creation.javapackagecreation;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.jdom.Attribute;
+import org.jdom.Comment;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jsxm.jsxmcore.util.Various;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmFileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+<span class="fc" id="L52">public class SxmPackageStructureCreator {</span>
+    
+<span class="fc" id="L54">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+<span class="fc" id="L55">    private String fileSeparator = System.getProperty(&quot;file.separator&quot;);</span>
+<span class="fc" id="L56">    private List&lt;File&gt; javaFiles = new LinkedList&lt;File&gt;();</span>
+    
+<span class="fc" id="L58">    private boolean packageFlag = false;</span>
+    
+    /**
+     * Creates the specification folders templates.
+     * 
+     * @param spec
+     *            the spec
+     * @param parent
+     *            the parent
+     * @param baseDir
+     *            the base dir
+     */
+    protected void createSpecificationFoldersTemplates(String spec, String parent, String baseDir) {
+<span class="fc" id="L71">        String specPath = baseDir + fileSeparator + &quot;src&quot; + fileSeparator + &quot;spec&quot; + parent + fileSeparator + spec;</span>
+<span class="fc" id="L72">        logger.debug(specPath);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (!new File(specPath).exists()) {</span>
+<span class="fc" id="L74">            List&lt;String&gt; directoryNames = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L75">            directoryNames.add(specPath + fileSeparator + &quot;animation&quot;);</span>
+<span class="fc" id="L76">            directoryNames.add(specPath + fileSeparator + &quot;specification&quot;);</span>
+<span class="fc" id="L77">            directoryNames.add(specPath + fileSeparator + &quot;testAdapters&quot;);</span>
+<span class="fc" id="L78">            directoryNames.add(specPath + fileSeparator + &quot;tests&quot;);</span>
+<span class="fc" id="L79">            directoryNames.add(specPath + fileSeparator + &quot;xjcgen&quot;);</span>
+<span class="fc" id="L80">            SxmFileUtils.makeDirectories(directoryNames);</span>
+<span class="fc" id="L81">            createSpecificationTemplate(spec, specPath + fileSeparator + &quot;specification&quot;);</span>
+<span class="fc" id="L82">            createSetsTemplate(spec, specPath + fileSeparator + &quot;specification&quot;);</span>
+<span class="fc" id="L83">            packageFlag = true;</span>
+<span class="fc" id="L84">            logger.debug(&quot;Creating folder structure for &quot; + spec);</span>
+        }
+        
+<span class="fc" id="L87">    }</span>
+    
+    /**
+     * Creates the specification template.
+     * 
+     * @param jsxmName
+     *            the jsxm name
+     * @param specificationPath
+     *            the specification path
+     */
+    private void createSpecificationTemplate(String jsxmName, String specificationPath) {
+<span class="fc" id="L98">        XMLOutputter xmlOutput = new XMLOutputter();</span>
+<span class="fc" id="L99">        Document doc = new Document();</span>
+        
+<span class="fc" id="L101">        Element sxmElement = new Element(&quot;SXM&quot;, Various.getInstance().getNameSpace());</span>
+        
+<span class="fc" id="L103">        logger.debug(jsxmName);</span>
+<span class="fc" id="L104">        sxmElement.setAttribute(&quot;name&quot;, jsxmName);</span>
+        
+<span class="fc" id="L106">        Namespace ns = Namespace.getNamespace(&quot;xsi&quot;, &quot;http://www.w3.org/2001/XMLSchema-instance&quot;);</span>
+<span class="fc" id="L107">        setNameSpaceSchemaLocation(ns, sxmElement,</span>
+                &quot;http://www.jsxm.org/schema http://www.jsxm.org/schema/specification.xsd&quot;);
+        
+        /*
+         * Dependencies element
+         */
+<span class="fc" id="L113">        createDependencies(sxmElement);</span>
+        
+        /*
+         * States element
+         */
+<span class="fc" id="L118">        createStates(sxmElement);</span>
+        
+        /*
+         * Initial State element
+         */
+<span class="fc" id="L123">        createInitialState(sxmElement);</span>
+        
+        /*
+         * Transitions element
+         */
+<span class="fc" id="L128">        createTransitions(sxmElement);</span>
+        
+        /*
+         * Memory element
+         */
+<span class="fc" id="L133">        createMemory(sxmElement);</span>
+        
+        /*
+         * Method element
+         */
+<span class="fc" id="L138">        createMethod(sxmElement);</span>
+        
+        /*
+         * Inputs element
+         */
+<span class="fc" id="L143">        createInputs(sxmElement);</span>
+        
+        /*
+         * Outputs element
+         */
+<span class="fc" id="L148">        createOutputs(sxmElement);</span>
+        
+        /*
+         * Faults element
+         */
+<span class="fc" id="L153">        createFaults(sxmElement);</span>
+        
+        /*
+         * JSXMUtilities element
+         */
+<span class="fc" id="L158">        createJsxmUtilities(sxmElement, ns);</span>
+        
+        /*
+         * Test Input Generation element
+         */
+<span class="fc" id="L163">        createInputGenerator(sxmElement);</span>
+        
+        /*
+         * Adding root element
+         */
+<span class="fc" id="L168">        doc.addContent(sxmElement);</span>
+        
+<span class="fc" id="L170">        xmlOutput.setFormat(Format.getPrettyFormat());</span>
+        
+<span class="fc" id="L172">        logger.debug(jsxmName + &quot;.xml&quot;);</span>
+<span class="fc" id="L173">        SxmFileUtils.writeXMLToFile(xmlOutput, doc, specificationPath + fileSeparator + jsxmName + &quot;.xml&quot;);</span>
+<span class="fc" id="L174">        logger.info(&quot;Specification file &quot; + jsxmName + &quot; created.&quot;);</span>
+<span class="fc" id="L175">    }</span>
+    
+    /**
+     * Creates the input generator.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createInputGenerator(Element sxmElement) {
+<span class="fc" id="L184">        sxmElement.addContent(new Comment(&quot;Test Input Generation definition&quot;));</span>
+<span class="fc" id="L185">        Element testinputgenerationElement = new Element(&quot;testinputgeneration&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L186">        testinputgenerationElement</span>
+        .addContent(new Comment(
+                &quot;An inputgenerator uses a function and the function must be one\n&quot;
+                        + &quot;        of the available functions.A Stream X Machine can contain many inputgenerators.\n    &quot;));
+<span class="fc" id="L190">        Element inputgenerator = new Element(&quot;inputgenerator&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L191">        inputgenerator.setAttribute(&quot;function&quot;, &quot;&quot;);</span>
+<span class="fc" id="L192">        testinputgenerationElement.addContent(inputgenerator);</span>
+        
+<span class="fc" id="L194">        sxmElement.addContent(testinputgenerationElement);</span>
+<span class="fc" id="L195">    }</span>
+    
+    /**
+     * Creates the jsxm utilities.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     * @param ns
+     *            the ns
+     */
+    private void createJsxmUtilities(Element sxmElement, Namespace ns) {
+<span class="fc" id="L206">        sxmElement.addContent(new Comment(&quot;JSXMUtilities definition&quot;));</span>
+<span class="fc" id="L207">        Element functionsElement = new Element(&quot;functions&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L208">        functionsElement</span>
+        .addContent(new Comment(
+                &quot;A function is using inputs and outputs and is described by a name.\n &quot;
+                        + &quot;        The input and output of a function must be valid names of inputs and outputs respectively.\n &quot;
+                        + &quot;        A function can be of type OutputFunction or FaultFunction depending on usage.\n &quot;
+                        + &quot;        A Stream X Machine can contain many functions. Preconditions and effect are optional.\n    &quot;));
+<span class="fc" id="L214">        Element functionChild = new Element(&quot;function&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L215">        functionChild.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L216">        functionChild.setAttribute(&quot;input&quot;, &quot;&quot;);</span>
+<span class="fc" id="L217">        functionChild.setAttribute(&quot;output&quot;, &quot;&quot;);</span>
+<span class="fc" id="L218">        functionChild.setAttribute(&quot;type&quot;, &quot;OutputFunction&quot;, ns);</span>
+<span class="fc" id="L219">        functionsElement.addContent(functionChild);</span>
+        
+<span class="fc" id="L221">        Element faultFunction = new Element(&quot;function&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L222">        faultFunction.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L223">        faultFunction.setAttribute(&quot;input&quot;, &quot;&quot;);</span>
+<span class="fc" id="L224">        faultFunction.setAttribute(&quot;fault&quot;, &quot;&quot;);</span>
+<span class="fc" id="L225">        faultFunction.setAttribute(&quot;type&quot;, &quot;FaultFunction&quot;, ns);</span>
+<span class="fc" id="L226">        functionsElement.addContent(faultFunction);</span>
+        
+<span class="fc" id="L228">        Element precondition = new Element(&quot;precondition&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L229">        Element effect = new Element(&quot;effect&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L230">        faultFunction.addContent(precondition);</span>
+<span class="fc" id="L231">        faultFunction.addContent(effect);</span>
+        
+<span class="fc" id="L233">        sxmElement.addContent(functionsElement);</span>
+<span class="fc" id="L234">    }</span>
+    
+    /**
+     * Creates the faults.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createFaults(Element sxmElement) {
+<span class="fc" id="L243">        sxmElement.addContent(new Comment(&quot;Faults definition&quot;));</span>
+<span class="fc" id="L244">        Element faultsElement = new Element(&quot;faults&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L245">        faultsElement.addContent(new Comment(&quot;A fault can be used by various functions.\n &quot;</span>
+                + &quot;        A fault is the result of a function when an input is consumed\n&quot;
+                + &quot;        and produces unepxected behaviour\n&quot;
+                + &quot;        A Stream X Machine can contain many faults.\n    &quot;));
+        
+<span class="fc" id="L250">        Element faultChild = new Element(&quot;fault&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L251">        faultChild.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L252">        faultsElement.addContent(faultChild);</span>
+        
+<span class="fc" id="L254">        sxmElement.addContent(faultsElement);</span>
+<span class="fc" id="L255">    }</span>
+    
+    /**
+     * Creates the outputs.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createOutputs(Element sxmElement) {
+<span class="fc" id="L264">        sxmElement.addContent(new Comment(&quot;Outputs definition&quot;));</span>
+<span class="fc" id="L265">        Element outputsElement = new Element(&quot;outputs&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L266">        outputsElement.addContent(new Comment(&quot;An output can be used by various functions.\n&quot;</span>
+                + &quot;        An output is the result of a function when an input is consumed\n&quot;
+                + &quot;        and produces desired behaviour.\n&quot;
+                + &quot;        A Stream X Machine can contain many outputs.\n    &quot;));
+<span class="fc" id="L270">        Element outputChild = new Element(&quot;output&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L271">        outputChild.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L272">        outputsElement.addContent(outputChild);</span>
+<span class="fc" id="L273">        sxmElement.addContent(outputsElement);</span>
+<span class="fc" id="L274">    }</span>
+    
+    /**
+     * Creates the inputs.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createInputs(Element sxmElement) {
+<span class="fc" id="L283">        sxmElement.addContent(new Comment(&quot;Inputs definition&quot;));</span>
+<span class="fc" id="L284">        Element inputsElement = new Element(&quot;inputs&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L285">        inputsElement.addContent(new Comment(&quot;An input can be used by various functions.\n&quot;</span>
+                + &quot;        An input is consumed by a function of the Stream X machine.\n&quot;
+                + &quot;        A Stream X Machine can contain many inputs.\n    &quot;));
+<span class="fc" id="L288">        Element inputChild = new Element(&quot;input&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L289">        inputChild.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L290">        inputsElement.addContent(inputChild);</span>
+<span class="fc" id="L291">        sxmElement.addContent(inputsElement);</span>
+<span class="fc" id="L292">    }</span>
+    
+    /**
+     * Creates the method.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createMethod(Element sxmElement) {
+<span class="fc" id="L301">        sxmElement.addContent(new Comment(&quot;Methods definition&quot;));</span>
+<span class="fc" id="L302">        Element methodsElement = new Element(&quot;methods&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L303">        sxmElement.addContent(methodsElement);</span>
+<span class="fc" id="L304">    }</span>
+    
+    /**
+     * Creates the memory.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createMemory(Element sxmElement) {
+<span class="fc" id="L313">        sxmElement.addContent(new Comment(&quot;A Stream X machine has only one memory and the additional options&quot;));</span>
+<span class="fc" id="L314">        sxmElement.addContent(new Comment(&quot;Memory definition&quot;));</span>
+<span class="fc" id="L315">        Element memoryElement = new Element(&quot;memory&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L316">        Element declarationChild = new Element(&quot;declaration&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L317">        memoryElement.addContent(declarationChild);</span>
+<span class="fc" id="L318">        Element initialChild = new Element(&quot;initial&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L319">        memoryElement.addContent(initialChild);</span>
+<span class="fc" id="L320">        Element displayChild = new Element(&quot;display&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L321">        memoryElement.addContent(displayChild);</span>
+<span class="fc" id="L322">        sxmElement.addContent(memoryElement);</span>
+<span class="fc" id="L323">    }</span>
+    
+    /**
+     * Creates the transitions.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createTransitions(Element sxmElement) {
+<span class="fc" id="L332">        sxmElement.addContent(new Comment(&quot;Transitions definition&quot;));</span>
+        
+<span class="fc" id="L334">        Element transitionsElement = new Element(&quot;transitions&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L335">        transitionsElement</span>
+        .addContent(new Comment(
+                &quot;A transition is using a function and connects 2 states.\n &quot;
+                        + &quot;        Attributes from, to and function must be valid names of states and functions respectively.\n&quot;
+                        + &quot;        A Stream X Machine can contain many transitions.\n    &quot;));
+<span class="fc" id="L340">        Element transitionChild = new Element(&quot;transition&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L341">        transitionChild.setAttribute(&quot;from&quot;, &quot;&quot;);</span>
+<span class="fc" id="L342">        transitionChild.setAttribute(&quot;function&quot;, &quot;&quot;);</span>
+<span class="fc" id="L343">        transitionChild.setAttribute(&quot;to&quot;, &quot;&quot;);</span>
+<span class="fc" id="L344">        transitionsElement.addContent(transitionChild);</span>
+<span class="fc" id="L345">        sxmElement.addContent(transitionsElement);</span>
+<span class="fc" id="L346">    }</span>
+    
+    /**
+     * Creates the initial state.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createInitialState(Element sxmElement) {
+<span class="fc" id="L355">        sxmElement.addContent(new Comment(&quot;Initial State definition&quot;));</span>
+<span class="fc" id="L356">        Element initialStateElement = new Element(&quot;initialState&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L357">        initialStateElement.addContent(new Comment(&quot;Initial state must be one of the declared states.\n &quot;</span>
+                + &quot;        A Stream X Machine can contain only one initial state.\n    &quot;));
+<span class="fc" id="L359">        initialStateElement.setAttribute(&quot;state&quot;, &quot;&quot;);</span>
+<span class="fc" id="L360">        sxmElement.addContent(initialStateElement);</span>
+<span class="fc" id="L361">    }</span>
+    
+    /**
+     * Creates the states.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createStates(Element sxmElement) {
+<span class="fc" id="L370">        sxmElement.addContent(new Comment(&quot;States definition&quot;));</span>
+<span class="fc" id="L371">        Element statesElement = new Element(&quot;states&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L372">        statesElement.addContent(new Comment(&quot;A state has a unique name that describes the current state.\n&quot;</span>
+                + &quot;        A Stream X Machine can contain many states.\n    &quot;));
+<span class="fc" id="L374">        Element stateChild = new Element(&quot;state&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L375">        stateChild.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L376">        statesElement.addContent(stateChild);</span>
+<span class="fc" id="L377">        sxmElement.addContent(statesElement);</span>
+<span class="fc" id="L378">    }</span>
+    
+    /**
+     * Creates the dependencies.
+     * 
+     * @param sxmElement
+     *            the sxm element
+     */
+    private void createDependencies(Element sxmElement) {
+<span class="fc" id="L387">        sxmElement.addContent(new Comment(&quot;The below model is not a Stream X Machine thus it can not\n&quot;</span>
+                + &quot;      be compiled and produce test cases. It serves as a abstract example in order to provide\n&quot;
+                + &quot;      a good insight of how an Stream X machine can be described using the below language.\n  &quot;));
+<span class="fc" id="L390">        sxmElement.addContent(new Comment(&quot;Dependencies definition&quot;));</span>
+<span class="fc" id="L391">        Element dependenciesElement = new Element(&quot;dependencies&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L392">        dependenciesElement.addContent(new Comment(&quot;A Stream X Machine can contain many dependencies.\n&quot;</span>
+                + &quot;        The dependencies declared must be available in the spec folder.\n&quot;
+                + &quot;        Dependecies are optional.\n    &quot;));
+<span class="fc" id="L395">        Element usesSXM = new Element(&quot;uses&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L396">        usesSXM.setAttribute(&quot;sxm&quot;, &quot;&quot;);</span>
+<span class="fc" id="L397">        dependenciesElement.addContent(usesSXM);</span>
+<span class="fc" id="L398">        sxmElement.addContent(dependenciesElement);</span>
+<span class="fc" id="L399">    }</span>
+    
+    private void setNameSpaceSchemaLocation(Namespace ns, Element element, String schema) {
+<span class="fc" id="L402">        element.addNamespaceDeclaration(ns);</span>
+<span class="fc" id="L403">        element.setAttribute(new Attribute(&quot;schemaLocation&quot;, schema, ns));</span>
+<span class="fc" id="L404">    }</span>
+    
+    /**
+     * Creates the sets template.
+     * 
+     * @param jsxmName
+     *            the jsxm name
+     * @param specificationPath
+     *            the specification path
+     */
+    private void createSetsTemplate(String jsxmName, String specificationPath) {
+<span class="fc" id="L415">        XMLOutputter xmlOutput = new XMLOutputter();</span>
+<span class="fc" id="L416">        Document doc = new Document();</span>
+<span class="fc" id="L417">        Element setsElement = new Element(&quot;sets&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L418">        logger.debug(jsxmName);</span>
+        
+<span class="fc" id="L420">        Namespace ns = Namespace.getNamespace(&quot;xsi&quot;, &quot;http://www.w3.org/2001/XMLSchema-instance&quot;);</span>
+<span class="fc" id="L421">        setNameSpaceSchemaLocation(ns, setsElement, &quot;http://www.jsxm.org/schema http://www.jsxm.org/schema/sets.xsd&quot;);</span>
+        
+        /*
+         * Characterization element
+         */
+<span class="fc" id="L426">        createCharacterization(setsElement);</span>
+        
+        /*
+         * StateCover element
+         */
+<span class="fc" id="L431">        createStateCover(setsElement);</span>
+        
+        /*
+         * Adding root element
+         */
+<span class="fc" id="L436">        doc.addContent(setsElement);</span>
+        
+<span class="fc" id="L438">        xmlOutput.setFormat(Format.getPrettyFormat());</span>
+<span class="fc" id="L439">        logger.debug(jsxmName + &quot;_sets.xml&quot;);</span>
+<span class="fc" id="L440">        SxmFileUtils.writeXMLToFile(xmlOutput, doc, specificationPath + fileSeparator + jsxmName + &quot;_sets.xml&quot;);</span>
+<span class="fc" id="L441">        logger.debug(&quot;Sets file &quot; + jsxmName + &quot;_sets.xml created.\n&quot;);</span>
+        
+<span class="fc" id="L443">    }</span>
+    
+    /**
+     * Creates the state cover.
+     * 
+     * @param setsElement
+     *            the sets element
+     */
+    private void createStateCover(Element setsElement) {
+<span class="fc" id="L452">        setsElement.addContent(new Comment(&quot;StateCover definition&quot;));</span>
+<span class="fc" id="L453">        Element stateCoverElement = new Element(&quot;statecover&quot;, Various.getInstance().getNameSpace());</span>
+        
+<span class="fc" id="L455">        Element sequenceStateCoverChild = new Element(&quot;sequence&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L456">        Element functionStateCoverChild = new Element(&quot;function&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L457">        functionStateCoverChild.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L458">        sequenceStateCoverChild.addContent(functionStateCoverChild);</span>
+<span class="fc" id="L459">        stateCoverElement.addContent(sequenceStateCoverChild);</span>
+        
+<span class="fc" id="L461">        setsElement.addContent(stateCoverElement);</span>
+<span class="fc" id="L462">    }</span>
+    
+    /**
+     * Creates the characterization.
+     * 
+     * @param setsElement
+     *            the sets element
+     */
+    private void createCharacterization(Element setsElement) {
+<span class="fc" id="L471">        setsElement.addContent(new Comment(&quot;Characterization definition&quot;));</span>
+<span class="fc" id="L472">        Element characterizationElement = new Element(&quot;characterization&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L473">        Element sequenceChild = new Element(&quot;sequence&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L474">        Element functionChild = new Element(&quot;function&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L475">        functionChild.setAttribute(&quot;name&quot;, &quot;&quot;);</span>
+<span class="fc" id="L476">        sequenceChild.addContent(functionChild);</span>
+        
+<span class="fc" id="L478">        characterizationElement.addContent(sequenceChild);</span>
+<span class="fc" id="L479">        setsElement.addContent(characterizationElement);</span>
+<span class="fc" id="L480">    }</span>
+    
+    public List&lt;File&gt; getJavaFiles() {
+<span class="fc" id="L483">        return javaFiles;</span>
+    }
+    
+    public void setJavaFiles(List&lt;File&gt; javaFiles) {
+<span class="nc" id="L487">        this.javaFiles = javaFiles;</span>
+<span class="nc" id="L488">    }</span>
+    
+    public boolean isPackageFlag() {
+<span class="fc" id="L491">        return packageFlag;</span>
+    }
+    
+    public void setPackageFlag(boolean packageFlag) {
+<span class="nc" id="L495">        this.packageFlag = packageFlag;</span>
+<span class="nc" id="L496">    }</span>
+    
+    public Logger getLogger() {
+<span class="fc" id="L499">        return logger;</span>
+    }
+    
+    public String getFileSeparator() {
+<span class="fc" id="L503">        return fileSeparator;</span>
+    }
+    
+    public void setFileSeparator(String fileSeparator) {
+<span class="nc" id="L507">        this.fileSeparator = fileSeparator;</span>
+<span class="nc" id="L508">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

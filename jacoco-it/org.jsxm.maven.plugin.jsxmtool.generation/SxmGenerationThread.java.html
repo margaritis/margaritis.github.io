@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmGenerationThread.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.generation</a> &gt; <span class="el_source">SxmGenerationThread.java</span></div><h1>SxmGenerationThread.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ * 
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.generation;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+
+import org.jsxm.jsxmcore.exceptions.DefinitionNotFoundException;
+import org.jsxm.maven.plugin.jsxmtool.core.Specification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public class SxmGenerationThread implements Runnable {
+    
+<span class="fc" id="L47">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+<span class="fc" id="L48">    private final String fileSeparator = System.getProperty(&quot;file.separator&quot;);</span>
+<span class="fc" id="L49">    private static final Object CONSTRUCTOR_LOCK = new Object();</span>
+    private Specification p;
+    
+    /**
+     * Instantiates a new sxm generation thread.
+     * 
+     * @param p
+     *            the p
+     */
+<span class="fc" id="L58">    public SxmGenerationThread(Specification p) {</span>
+<span class="fc" id="L59">        this.p = p;</span>
+<span class="fc" id="L60">    }</span>
+    
+    @Override
+    public void run() {
+<span class="fc" id="L64">        MDC.put(&quot;specificationName&quot;, p.getClassName());</span>
+<span class="fc" id="L65">        logger.debug(&quot;&quot;);</span>
+<span class="fc" id="L66">        logger.debug(&quot;Generating tests for &quot; + p.getSpecificationFile().getName());</span>
+<span class="fc" id="L67">        File testsXML = new File(p.getTestsDirectory() + p.getClassName() + &quot;_test.xml&quot;);</span>
+<span class="fc" id="L68">        File jsxmSpec = new File(p.getSpecificationFile().getAbsolutePath());</span>
+<span class="fc" id="L69">        File sxm = new File(p.getTempDirectory() + p.getClassName() + &quot;SXM.java&quot;);</span>
+<span class="fc" id="L70">        File sxmBase = new File(p.getTempDirectory() + p.getClassName() + &quot;SXM_base.java&quot;);</span>
+<span class="fc" id="L71">        File junitTest = new File(p.getJunitMavenTestPath() + p.getPackageTest() + fileSeparator + p.getClassName()</span>
+                + &quot;JsxmAdapterTest.java&quot;);
+        
+<span class="fc" id="L74">        SimpleDateFormat sdf = new SimpleDateFormat(&quot;MM/dd/yyyy HH:mm:ss&quot;);</span>
+<span class="fc" id="L75">        logger.debug(&quot;Jsxm model was last modified at : &quot; + jsxmSpec.toString() + &quot; &quot;</span>
+                + sdf.format(jsxmSpec.lastModified()));
+<span class="fc" id="L77">        logger.debug(&quot;Tests.xml file was last modified at : &quot; + testsXML.toString() + &quot; &quot;</span>
+                + sdf.format(testsXML.lastModified()));
+<span class="fc" id="L79">        logger.debug(&quot;SXM java file was last modified at : &quot; + sxm.toString() + sdf.format(sxm.lastModified()));</span>
+<span class="fc" id="L80">        logger.debug(&quot;SXMBase java file was last modified at : &quot; + sxmBase.toString() + &quot; &quot;</span>
+                + sdf.format(sxmBase.lastModified()));
+<span class="fc" id="L82">        logger.debug(&quot;Junit java file was last modified at : &quot; + junitTest.toString() + &quot; &quot;</span>
+                + sdf.format(junitTest.lastModified()));
+        
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (testsXML.exists()) {</span>
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">            if (jsxmSpec.lastModified() &lt; testsXML.lastModified() &amp;&amp; sxm.lastModified() &lt; testsXML.lastModified()) {</span>
+<span class="fc" id="L87">                logger.info(&quot;Nothing to generate - all tests are up to date&quot; + &quot;(&quot; + p.getClassName() + &quot;)&quot;);</span>
+            } else {
+                try {
+                    SxmGenerator sxmGenerator;
+<span class="fc" id="L91">                    synchronized (CONSTRUCTOR_LOCK) {</span>
+<span class="fc" id="L92">                        sxmGenerator = new SxmGenerator();</span>
+<span class="fc" id="L93">                        logger.debug(&quot;The sxm generator object &quot; + sxmGenerator);</span>
+<span class="pc" id="L94">                    }</span>
+<span class="fc" id="L95">                    sxmGenerator.generate(p);</span>
+<span class="nc" id="L96">                } catch (DefinitionNotFoundException e) {</span>
+<span class="nc" id="L97">                    logger.error(&quot;DefinitionNotFoundException : &quot;, e);</span>
+<span class="pc" id="L98">                }</span>
+            }
+        } else {
+            try {
+                SxmGenerator sxmGenerator;
+<span class="fc" id="L103">                synchronized (CONSTRUCTOR_LOCK) {</span>
+<span class="fc" id="L104">                    sxmGenerator = new SxmGenerator();</span>
+<span class="fc" id="L105">                    logger.debug(&quot;The sxm generator object &quot; + sxmGenerator);</span>
+<span class="pc" id="L106">                }</span>
+<span class="fc" id="L107">                sxmGenerator.generate(p);</span>
+<span class="nc" id="L108">            } catch (DefinitionNotFoundException e) {</span>
+<span class="nc" id="L109">                logger.error(&quot;DefinitionNotFoundException : &quot;, e);</span>
+<span class="fc" id="L110">            }</span>
+        }
+<span class="fc" id="L112">        MDC.remove(&quot;specificationName&quot;);</span>
+<span class="fc" id="L113">    }</span>
+    
+    public Specification getP() {
+<span class="nc" id="L116">        return p;</span>
+    }
+    
+    public void setP(Specification p) {
+<span class="nc" id="L120">        this.p = p;</span>
+<span class="nc" id="L121">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

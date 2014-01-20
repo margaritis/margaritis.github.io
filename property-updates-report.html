@@ -8,7 +8,7 @@
 
 	<head>
 		<meta charset="UTF-8" />
-		<title>JSXM Maven Plugin</title>
+		<title>Property Updates Report | Reflow Maven Skin</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="description" content="" />
 		<meta http-equiv="content-language" content="en" />
@@ -33,7 +33,7 @@
 <link rel="author" href="http://plus.google.com/+KonstantinosMargaritis/"/>
 	</head>
 
-	<body class="page-index project-jsxm-maven-plugin" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+	<body class="page-property-updates-report project-jsxm-maven-plugin" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
 
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
@@ -80,7 +80,7 @@
 									</li>
 								</ul>
 							</li>
-							<li class="dropdown">
+							<li class="dropdown active">
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown">Maven documentation <b class="caret"></b></a>
 								<ul class="dropdown-menu">
 									<li class="dropdown-submenu">
@@ -107,7 +107,7 @@
 											<li><a href="cpd.html" title="CPD Report">CPD Report </a></li>
 											<li><a href="dependency-updates-report.html" title="Dependency Updates Report">Dependency Updates Report </a></li>
 											<li><a href="plugin-updates-report.html" title="Plugin Updates Report">Plugin Updates Report </a></li>
-											<li><a href="property-updates-report.html" title="Property Updates Report">Property Updates Report </a></li>
+											<li class="active"><a href="" title="Property Updates Report">Property Updates Report </a></li>
 											<li><a href="invoker-report.html" title="Invoker Build Results">Invoker Build Results </a></li>
 											<li><a href="changes-report.html" title="Changes Report">Changes Report </a></li>
 											<li><a href="dependency-analysis.html" title="Dependency Analysis">Dependency Analysis </a></li>
@@ -138,175 +138,75 @@
 				</div>
 			</div>
 		</div>
+		<div>
+			<ul class="breadcrumb">
+				<li><a href="./" title="JSXM">JSXM </a></li>
+				<li class="divider">/</li>
+				<li>Property Updates Report</li>
+			</ul>
+		</div>
+		<hr class="toc-separator" />
+		<div id="toc-bar" class="navbar">
+			<div class="navbar-inner">
+				<div id="toc-scroll-target" class="container">
+					<ul id="toc" class="nav">
+						<li class="toplevel"><a href="#Overview" title="Overview">Overview</a></li>
+						<li class="toplevel"><a href="#Summary_of_properties_associated_with_artifact_versions" title="Summary of properties associated with artifact versions">Summary of properties associated with artifact versions</a></li>
+						<li class="divider-vertical"></li>
+						<li class="toplevel"><a href="#Properties_associated_with_artifact_versions" title="Properties associated with artifact versions">Properties associated with artifact versions</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
 	</header>
 
 	<div class="main-body">
-	<div id="carousel0" class="carousel slide">
-		<div class="carousel-inner">
-			<div class="item active">
-				<img src="images/animator.png" alt="JSXM Animator" />
-				<div class="carousel-caption">
-					<h4 id="Graphical_SXM_Animation">Graphical SXM Animation</h4>  
-<p>Graphical animator for testing the Stream X Machine.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/junitTest.png" alt="JSXM Animator" />
-				<div class="carousel-caption">
-					<h4 id="JUnit_Test_Generation">JUnit Test Generation</h4>  
-<p>JUnit tranformers for generating JUnit tests from the abstract XML tests. PHP and Javascript tranformers will be added soon.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/sampleGeneration.png" alt="Page layouts" />
-				<div class="carousel-caption">
-					<h4 id="Sample_Generation">Sample Generation</h4>  
-<p>Automatic generation of JSXM models for easier integration with existing projects. </p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/validation.png" alt="Modern skin" />
-				<div class="carousel-caption">
-					<h4 id="Model_Validation">Model Validation</h4>  
-<p>JSXM models are validated against XSD schemas to ensure that the specifications match the SXM rules.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/kAnimate.png" alt="Animate list and individual k" />
-				<div class="carousel-caption">
-					<h4 id="Advanced_Configuration">Advanced Configuration</h4>  
-<p>Each JSXM specification can be processed using a different k without affecting the general k or any other specification.</p> 
-<div class="section"> 
-</div>
-				</div>
-			</div>
-			<div class="item ">
-				<img src="images/loggingPool.png" alt="Customizable Threadpools and advanced logging" />
-				<div class="carousel-caption">
-					<h4 id="Advanced_Configuration_cont.">Advanced Configuration cont.</h4>
-				</div>
-			</div>
-		</div>
-		<a class="left carousel-control" href="#carousel0" data-slide="prev">&lsaquo;</a>
-		<a class="right carousel-control" href="#carousel0" data-slide="next">&rsaquo;</a>
-	</div>
-	<div class="row columns columns2">
-		<div class="span6">
-			<h2 id="Usage">Usage</h2>
-<p>To use this Maven plugin, include it in your pom.xml plugins section:</p>
-<div class="source"> 
- <pre>&lt;plugins&gt;
-  ...
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.jsxm.maven.plugin&lt;/groupId&gt;
-                &lt;artifactId&gt;jsxm-maven-plugin&lt;/artifactId&gt;
-                &lt;version&gt;1.4.11-RC1&lt;/version&gt;
-            &lt;/plugin&gt;
-  ...
-&lt;/plugins&gt;
-</pre> 
-</div>
-<div class="section">    
-</div>
-		</div>
-		<div class="span6">
-			<h2 id="POM_Repositories">POM Repositories</h2>
-<p>Add jsxm repository to the repositories in the POM file:</p>
-<div class="source"> 
- <pre>    &lt;pluginRepositories&gt;
-        ...
-        &lt;pluginRepository&gt;
-            &lt;releases&gt;
-                &lt;enabled&gt;true&lt;/enabled&gt;
-                &lt;updatePolicy&gt;always&lt;/updatePolicy&gt;
-                &lt;checksumPolicy&gt;fail&lt;/checksumPolicy&gt;
-            &lt;/releases&gt;
-            &lt;id&gt;jsxm&lt;/id&gt;
-            &lt;name&gt;JSXM Model Based Testing&lt;/name&gt;
-            &lt;url&gt;http://www.jsxm.org/maven2/&lt;/url&gt;
-        &lt;/pluginRepository&gt;
-        ...
-    &lt;/pluginRepositories&gt;
-
-</pre> 
-</div>
-<div class="section">      
-</div>
-		</div>
-	</div>
-	<div class="row">
-		<div class="span6">
-			<h2 id="Multi_threaded">Multi threaded</h2>
-<p>JSXM Maven plugin is designed to support different multi-threaded implementations. Taking advantage of the factory and thread pool patterns there is an easy way of switching thread pool implementations by changing the following properties in the pom.xml</p>
-<ul> 
- <li><b>banimationThreadPool</b> - thread pool responsible for the banimation phase</li> 
- <li><b>compilationThreadPool</b> - thread pool responsible for the compilation phase</li> 
- <li><b>sampleCreationThreadPool</b> - thread pool responsible for the sample creation phase</li> 
- <li><b>externalPackageCreationThreadPool</b> - thread pool responsible for the copying external package structure</li> 
- <li><b>generationThreadPool</b> - thread pool responsible for the generation phase</li> 
- <li><b>transformationThreadPool</b> - thread pool responsible for the transformation phase</li> 
- <li><b>validationThreadPool</b> - thread pool responsible for the validation phase</li> 
-</ul>
-<p>**The available options for each thread pool are</p>
-<ul> 
- <li><b>cachedThreadPool</b></li> 
- <li><b>fixedThreadPool</b></li> 
- <li><b>singleFixedThreadPool</b></li> 
- <li><b>singleThreadExecutor</b></li> 
-</ul>
-<div class="section">       
-</div>
-		</div>
-		<div class="span6">
-			<h2 id="Logging_Configuration">Logging Configuration</h2>
-<p>JSXM Maven Plugin uses logback and currently supports 3 different exports. HTML, PDF and txt logs. Each file can have its own logger level, independent from the other files. The available logging levels are: </p>
-<ul> 
- <li><b>WARN</b> - Prints warn messages.</li> 
- <li><b>ERROR</b> - Prints error and warn messages.</li> 
- <li><b>INFO</b> - Prints info, error and warn messages.</li> 
- <li><b>DEBUG</b> - Prints debug, info, error and warn messages.</li> 
- <li><b>TRACE</b> - Prints trace, debug, warn, error and info messages.</li> 
- <li><b>OFF</b> - No logging.</li> 
-</ul>
-<p>The above levels can be used as a text inside the configuration properties below. </p>
-<div class="source"> 
- <pre>    &lt;configuration&gt;
-        ...
-        &lt;consoleLoggerLevel&gt;LOGGING_LEVEL&lt;/consoleLoggerLevel&gt;
-        &lt;htmlFileLoggerLevel&gt;LOGGING_LEVEL&lt;/htmlFileLoggerLevel&gt;
-        &lt;txtFileLoggerLevel&gt;LOGGING_LEVEL&lt;/txtFileLoggerLevel&gt;
-        ...
-    &lt;/configuration&gt;
-
-</pre> 
-</div>
-<p>*Tip: In case you have enough experience in writing JSXM specifications you can just turn off the console and txt logger and let the HTML logger report only errors. </p>
-		</div>
-	</div>
-	<div class="row">
-	</div>
 	<div class="row">
 		<div class="span12">
 			<div class="body-content">
-				<div class="section"> 
- <h2 id="ANSI_Support">ANSI Support</h2> 
- <p>JSXM Maven plugin supports message output using ANSI escape code. By setting the parameter ansiSupport to true, messages in the console will be colorful. The plugin uses a special profile which is triggered when a windows platform is detected in order to download the org.fusesource.jansi library to allow support in a windows terminal in comparison with Unix based platforms that natively support ANSI and do not require any additional library. ANSI is also supported by Netbeans and Eclipse IDE, although the latter requires an extra plugin. </p>  
+<div class="section"> 
+ <div class="page-header">
+  <h2 id="Overview">Overview</h2>
+ </div> 
+ <p>This report summarizes newer versions that may be available for your project's various properties associated with artifacts.</p> 
+ <table border="0" class="bodyTable table table-striped table-hover"> 
+  <tbody> 
+   <tr class="a"> 
+    <td><i class="icon-ok"></i></td> 
+    <td># of properties using the latest version available</td> 
+    <td>0</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><i class="icon-warning-sign"></i></td> 
+    <td># of properties where the next version available is smaller than an incremental version update</td> 
+    <td>0</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><i class="icon-warning-sign"></i></td> 
+    <td># of properties where the next version available is an incremental version update</td> 
+    <td>0</td> 
+   </tr> 
+   <tr class="b"> 
+    <td><i class="icon-warning-sign"></i></td> 
+    <td># of properties where the next version available is a minor version update</td> 
+    <td>0</td> 
+   </tr> 
+   <tr class="a"> 
+    <td><i class="icon-warning-sign"></i></td> 
+    <td># of properties where the next version available is a major version update</td> 
+    <td>0</td> 
+   </tr> 
+  </tbody> 
+ </table> 
+ <div class="section"> 
+  <h3 id="Summary_of_properties_associated_with_artifact_versions">Summary of properties associated with artifact versions</h3> 
+  <p>report.overview.noProperty</p> 
+ </div> 
+</div> 
+<div class="section"> 
+ <h2 id="Properties_associated_with_artifact_versions">Properties associated with artifact versions</h2> 
+ <p></p> 
 </div>
-				<hr />
-				<div class="section"> 
- <h2 id="Graphical_Interface_Animation">Graphical Interface Animation</h2> 
- <p>JSXM Maven plugin has a built in graphical envirnoment for animating JSXM models. The SXM under animation can be reseted at any point and the animation can be saved and used with batch animation processing. The environment is aware of every SXMs current state so switching between SXM instances animation can be safely<br />done without lossing the current animation. </p>  
-</div>
-				<hr />
-				
 			</div>
 		</div>
 	</div>
@@ -322,8 +222,8 @@
 				<div class="span3 bottom-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">Overview</li>
-						<li class="active">
-							<a href="#" title="Introduction">Introduction </a>
+						<li>
+							<a href="index.html" title="Introduction">Introduction </a>
 						</li>
 						<li>
 							<a href="plugin-info.html" title="Goals">Goals </a>
@@ -396,7 +296,51 @@
 							<a href="project-info.html" title="Project Information">Project Information <i class="icon-chevron-right"></i></a>
 						</li>
 						<li>
-							<a href="project-reports.html" title="Project Reports">Project Reports <i class="icon-chevron-right"></i></a>
+							<a href="project-reports.html" title="Project Reports">Project Reports <i class="icon-chevron-down"></i></a>
+							<ul class="nav nav-list">
+						<li>
+							<a href="plugin-info.html" title="Plugin Documentation">Plugin Documentation </a>
+						</li>
+						<li>
+							<a href="checkstyle.html" title="Checkstyle">Checkstyle </a>
+						</li>
+						<li>
+							<a href="surefire-report.html" title="Surefire Report">Surefire Report </a>
+						</li>
+						<li>
+							<a href="findbugs.html" title="FindBugs Report">FindBugs Report </a>
+						</li>
+						<li>
+							<a href="pmd.html" title="PMD Report">PMD Report </a>
+						</li>
+						<li>
+							<a href="cpd.html" title="CPD Report">CPD Report </a>
+						</li>
+						<li>
+							<a href="dependency-updates-report.html" title="Dependency Updates Report">Dependency Updates Report </a>
+						</li>
+						<li>
+							<a href="plugin-updates-report.html" title="Plugin Updates Report">Plugin Updates Report </a>
+						</li>
+						<li class="active">
+							<a href="#" title="Property Updates Report">Property Updates Report </a>
+						</li>
+						<li>
+							<a href="invoker-report.html" title="Invoker Build Results">Invoker Build Results </a>
+						</li>
+						<li>
+							<a href="changes-report.html" title="Changes Report">Changes Report </a>
+						</li>
+						<li>
+							<a href="dependency-analysis.html" title="Dependency Analysis">Dependency Analysis </a>
+						</li>
+						<li>
+							<a href="changelog.html" title="Change Log">Change Log </a>
+						</li>
+						<li>
+							<a href="dev-activity.html" title="Developer Activity">Developer Activity </a>
+						</li>
+							</ul>
 						</li>
 					</ul>
 				</div>

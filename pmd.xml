@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd version="4.3" timestamp="2014-01-19T23:58:00.224">
+<file name="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/jsxmtool/compilation/repast/RepastCompilationManager.java">
+<violation beginline="104" endline="104" begincolumn="35" endcolumn="70" rule="InefficientStringBuffering" ruleset="String and StringBuffer Rules" package="org.jsxm.maven.plugin.jsxmtool.compilation.repast" class="RepastCompilationManager" method="copyRepast" externalInfoUrl="http://pmd.sourceforge.net/rules/strings.html#InefficientStringBuffering" priority="3">
+Avoid concatenating nonliterals in a StringBuffer constructor or append().
+</violation>
+<violation beginline="117" endline="117" begincolumn="39" endcolumn="78" rule="InefficientStringBuffering" ruleset="String and StringBuffer Rules" package="org.jsxm.maven.plugin.jsxmtool.compilation.repast" class="RepastCompilationManager" method="copyRepast" externalInfoUrl="http://pmd.sourceforge.net/rules/strings.html#InefficientStringBuffering" priority="3">
+Avoid concatenating nonliterals in a StringBuffer constructor or append().
+</violation>
+</file>
+<file name="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/jsxmtool/creation/examplescreation/SxmSampleCreator.java">
+<violation beginline="178" endline="178" begincolumn="88" endcolumn="106" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer Rules" package="org.jsxm.maven.plugin.jsxmtool.creation.examplescreation" class="SxmSampleCreator" method="createAdapter" externalInfoUrl="http://pmd.sourceforge.net/rules/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;		}&quot; appears 6 times in this file; the first occurrence is on line 178
+</violation>
+</file>
+<file name="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/jsxmtool/creation/javapackagecreation/SxmPackageStructureCreator.java">
+<violation beginline="104" endline="104" begincolumn="33" endcolumn="38" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer Rules" package="org.jsxm.maven.plugin.jsxmtool.creation.javapackagecreation" class="SxmPackageStructureCreator" method="createSpecificationTemplate" externalInfoUrl="http://pmd.sourceforge.net/rules/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;name&quot; appears 9 times in this file; the first occurrence is on line 104
+</violation>
+<violation beginline="191" endline="191" begincolumn="37" endcolumn="46" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer Rules" package="org.jsxm.maven.plugin.jsxmtool.creation.javapackagecreation" class="SxmPackageStructureCreator" method="createInputGenerator" externalInfoUrl="http://pmd.sourceforge.net/rules/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;function&quot; appears 6 times in this file; the first occurrence is on line 191
+</violation>
+</file>
+<file name="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/jsxmtool/generation/SxmTransformationThread.java">
+<violation beginline="100" endline="100" begincolumn="42" endcolumn="73" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer Rules" package="org.jsxm.maven.plugin.jsxmtool.generation" class="SxmTransformationThread" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;DefinitionNotFoundException : &quot; appears 4 times in this file; the first occurrence is on line 100
+</violation>
+</file>
+<suppressedviolation filename="/Users/breath/Documents/changeJSXM/maven-jsxm-plugin/src/main/java/org/jsxm/maven/plugin/mojo/GenerationMojo.java" suppressiontype="annotation" msg="Avoid unused private fields such as 'generateReport'." usermsg=""/>
+</pmd>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CreationMojo.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.mojo</a> &gt; <span class="el_source">CreationMojo.java</span></div><h1>CreationMojo.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.mojo;
+
+import java.util.List;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.jdom.Namespace;
+import org.jsxm.jsxmcore.util.Various;
+import org.jsxm.maven.plugin.jsxmtool.JSXMFacade;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+
+/**
+ * Goal that creates the spec directory, the additional directories needed for
+ * each specification and the template file of [specName].xml and
+ * [specName]_sets.xml. The template includes implementation and adapters for
+ * the implementation.
+ * 
+ * @since Version 1.0
+ * @goal create-sample
+ * @phase generate-resources
+ */
+<span class="fc" id="L56">public class CreationMojo extends AbstractMojo {</span>
+    
+    /**
+     * Sets the directory for all the jsxm specifications. The default value is
+     * the spec directory under src--&gt;src/spec.
+     * 
+     * @parameter default-value=&quot;${basedir}/src/spec/&quot;
+     * @required
+     */
+    private String jsxmRootDir;
+    
+    /**
+     * Sets the test directory of the maven project. The default value is the
+     * src/test/java of the maven project.
+     * 
+     * @parameter default-value=&quot;${basedir}/src/test/java/&quot;
+     * @required
+     */
+    private String testDirectory;
+    
+    /**
+     * Sets the implementation directory of the maven project. The default value
+     * is the src/main/java of the maven project.
+     * 
+     * @parameter default-value=&quot;${basedir}/src/main/java/&quot;
+     * @required
+     */
+    private String javaDirectory;
+    
+    /**
+     * The above list is used for entering the names that are going to be used
+     * in the creation of the folders, subfolders, specification.xml and
+     * sets.xml.
+     * There is no default value for the above parameter. The parameter is
+     * working as a list and every new name should be given through a new
+     * parameter. For example, if you want to create 3 specifications with names
+     * Test1, Test2, Test3 you should enter inside the jsxmList tag the tags
+     * below.
+     * &amp;lt;param&amp;gt;Test1&amp;lt;/param&amp;gt;
+     * &amp;lt;param&amp;gt;Test2&amp;lt;/param&amp;gt;
+     * &amp;lt;param&amp;gt;Test3&amp;lt;/param&amp;gt;
+     * 
+     * The above 3 tags will create 3 folders Test1, Test2, and Test3 under the
+     * spec directory with all the necessary subfolders needed by the
+     * maven-jsxm-plug in(specification, testAdapters and animation).
+     * Finally, the there will be created Test1.xml and Test1_sets.xml,
+     * Test2.xml and Test2_sets.xml, Test3.xml and Test3_sets.xml templates
+     * containing sample data. There is not limit in number of parameters. The
+     * above tag should contain at least one parameter in order to compile
+     * successfully.
+     * *Note: There is the possibility to create subfolders and folders inside
+     * the subfolders. For example in order to create 2 folders Test1 and Test2
+     * inside a Tests folder, the following params should be used
+     * &amp;lt;param&amp;gt;Tests/Test1&amp;lt;/param&amp;gt;
+     * &amp;lt;param&amp;gt;Tests/Test2&amp;lt;/param&amp;gt;
+     * 
+     * @parameter
+     * @required
+     */
+    private List&lt;String&gt; jsxmList;
+    
+    /**
+     * Sets the namespace used by the jsxm core and by maven-jsxm-plug in. The
+     * default namespace is http://www.jsxm.org/schema. The namespace must be
+     * the same as the namespaces used in the xsd schemas (specification, sets,
+     * definitions). The above namespace is used for the validation, creation
+     * and all the necessary operations needed regarding the xml files.
+     * 
+     * @parameter default-value=&quot;http://www.jsxm.org/schema&quot;
+     * @required
+     */
+    private String nameSpace;
+    
+    /**
+     * Sets the console LOGGER level.
+     * 
+     * @parameter default-value=&quot;INFO&quot;
+     * @required
+     */
+    private String consoleLoggerLevel;
+    
+    
+    /**
+     * Sets the specName.html file logger level.
+     * 
+     * @parameter default-value=&quot;INFO&quot;
+     * @required
+     */
+    private String htmlFileLoggerLevel;
+    
+    
+    /**
+     * Sets the specName.txt file logger level.
+     * 
+     * @parameter default-value=&quot;INFO&quot;
+     * @required
+     */
+    private String txtFileLoggerLevel;
+        
+    /** 
+     * By setting ansiSupport to true the application is using ansi
+     * output which produces colorful messages in the console.
+     * This does not affect the output files. 
+     * 
+     * @parameter default-value=&quot;false&quot;
+     * @required
+     */
+    private boolean ansiSupport;
+    
+    /** 
+     * Sets the executor for banimation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value=&quot;fixedThreadPool&quot;
+     * @required
+     * @since 1.4.7
+     */
+    private String banimationThreadPool;
+    
+    /** 
+     * Sets the executor for compilation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     *  
+     * @parameter default-value=&quot;fixedThreadPool&quot;
+     * @required
+     * @since 1.4.7
+     */
+    private String compilationThreadPool;
+    
+    /** 
+     * Sets the executor for sample creation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value=&quot;fixedThreadPool&quot;
+     * @required
+     * @since 1.4.7
+     */
+    private String sampleCreationThreadPool;
+    
+    /** 
+     * Sets the executor for external package creation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value=&quot;fixedThreadPool&quot;
+     * @required
+     * @since 1.4.7
+     */
+    private String externalPackageCreationThreadPool;
+    
+    /** 
+     * Sets the executor for generation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value=&quot;fixedThreadPool&quot;
+     * @required
+     * @since 1.4.7
+     */
+    private String generationThreadPool;
+    
+    /** 
+     * Sets the executor for tranformation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value=&quot;fixedThreadPool&quot;
+     * @required
+     * @since 1.4.7
+     */
+    private String transformationThreadPool;
+    
+    /** 
+     * Sets the executor for validation phase
+     * Current options are: 
+     *     cachedThreadPool
+     *     fixedThreadPool
+     *     singleFixedThreadPool
+     *     singleThreadExecutor
+     * 
+     * @parameter default-value=&quot;singleFixedThreadPool&quot;
+     * @required
+     * @since 1.4.7
+     */
+    private String validationThreadPool;
+    
+    /* (non-Javadoc)
+     * @see org.apache.maven.plugin.Mojo#execute()
+     */
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+        
+<span class="fc" id="L269">        JSXMFacade.getInstance().setMultiThreaded(banimationThreadPool,compilationThreadPool,sampleCreationThreadPool,externalPackageCreationThreadPool,</span>
+                generationThreadPool,transformationThreadPool,validationThreadPool);
+<span class="fc" id="L271">        Various.getInstance().setNameSpace(Namespace.getNamespace(nameSpace));</span>
+<span class="fc" id="L272">        JSXMFacade.getInstance().initiateLogging(consoleLoggerLevel,htmlFileLoggerLevel,txtFileLoggerLevel,ansiSupport);</span>
+<span class="fc" id="L273">        JSXMFacade.getInstance().createSample(jsxmRootDir, jsxmList, testDirectory, javaDirectory);</span>
+<span class="fc" id="L274">        JSXMFacade.getInstance().validate(jsxmRootDir, testDirectory);</span>
+<span class="fc" id="L275">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

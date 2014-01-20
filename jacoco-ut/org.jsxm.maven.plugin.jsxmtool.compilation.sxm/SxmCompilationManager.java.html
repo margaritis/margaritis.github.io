@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmCompilationManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.compilation.sxm</a> &gt; <span class="el_source">SxmCompilationManager.java</span></div><h1>SxmCompilationManager.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.compilation.sxm;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jsxm.jsxmcore.runtimeexceptions.ElementChildrenMissingException;
+import org.jsxm.jsxmcore.runtimeexceptions.ElementMissingException;
+import org.jsxm.jsxmcore.util.Various;
+import org.jsxm.maven.plugin.jsxmtool.core.JSXM;
+import org.jsxm.maven.plugin.jsxmtool.core.JSXMThreadPoolFactory;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.MissingDeclaredSxmDependency;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.SpecFolderNotFoundException;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.SpecificationModelsNotFoundException;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmCompilationUtils;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmFileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+<span class="fc" id="L60">public class SxmCompilationManager {</span>
+    
+<span class="fc" id="L62">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+    
+    private List&lt;File&gt; javaFiles;
+<span class="fc" id="L65">    private Set&lt;String&gt; missingDependencies = new HashSet&lt;String&gt;();</span>
+    private File specDirectory;
+    
+    /**
+     * Initialize.
+     * 
+     * @param m2Home
+     *            the m2 home
+     * @param tempTarget
+     *            the temp target
+     * @param testDirectory
+     *            the test directory
+     * @param javaDirectory
+     *            the java directory
+     * @param jsxmSpecRootDir
+     *            the jsxm spec root dir
+     * @param mode
+     *            the mode
+     * @param kInput
+     *            the k input
+     * @param sxmBaseImports
+     *            the sxm base imports
+     * @param sxmImports
+     *            the sxm imports
+     * @param sxmBaseInheritance
+     *            the sxm base inheritance
+     * @param kList
+     *            the k list
+     */
+    public void initialize(String m2Home, String tempTarget, String testDirectory, File javaDirectory,
+            String jsxmSpecRootDir, String mode, String kInput, String sxmBaseImports, String sxmImports,
+            String sxmBaseInheritance, Properties kList) {
+        
+<span class="fc" id="L98">        long compilePhaseStart = System.currentTimeMillis();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        if (JSXM.getInstance().isValidate()) {</span>
+<span class="fc" id="L100">            specDirectory = new File(jsxmSpecRootDir);</span>
+<span class="fc" id="L101">            List&lt;File&gt; specificationFolderList = new LinkedList&lt;File&gt;();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            if (specDirectory.exists()) {</span>
+<span class="fc" id="L103">                List&lt;File&gt; packagesList = new LinkedList&lt;File&gt;();</span>
+<span class="fc" id="L104">                SxmFileUtils.traverseDirectoryWithExclusion(specDirectory, packagesList, &quot;.xml&quot;);</span>
+                
+<span class="fc" id="L106">                javaFiles = new LinkedList&lt;File&gt;();</span>
+<span class="fc" id="L107">                SxmFileUtils.traverseDirectory(javaDirectory, javaFiles, &quot;.java&quot;);</span>
+                
+<span class="fc bfc" id="L109" title="All 2 branches covered.">                if (!packagesList.isEmpty()) {</span>
+<span class="fc" id="L110">                    logger.info(&quot;Testing directories&quot;);</span>
+<span class="fc" id="L111">                    SxmCompilationUtils.createSpecNameFolderList(packagesList, specificationFolderList);</span>
+<span class="fc" id="L112">                    SxmCompilationUtils.checkJsxmJavaTests(specificationFolderList, testDirectory);</span>
+<span class="fc" id="L113">                    SxmCompilationUtils.setClassLoaderDirectories(tempTarget);</span>
+                    
+<span class="fc" id="L115">                    long depependenciesStart = System.currentTimeMillis();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">                    for (int i = 0; i &lt; specificationFolderList.size(); i++) {</span>
+<span class="fc" id="L117">                        logger.debug(&quot;Checking &quot; + specificationFolderList.get(i).getName() + &quot; for dependencies.&quot;);</span>
+<span class="fc" id="L118">                        checkDependencies(specificationFolderList.get(i).getAbsolutePath(), specDirectory,</span>
+                                specificationFolderList);
+                    }
+<span class="fc" id="L121">                    long depependenciesEnd = System.currentTimeMillis();</span>
+<span class="fc" id="L122">                    logger.debug(&quot;Time for checking dependencies: {} ms&quot;,depependenciesEnd-depependenciesStart);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">                    if (!missingDependencies.isEmpty()) {</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">                        for (String missingDependency : missingDependencies) {</span>
+<span class="fc" id="L125">                            logger.error(&quot;Declared SXM Dependency &quot; + missingDependency + &quot; missing.&quot;);</span>
+<span class="fc" id="L126">                        }</span>
+<span class="fc" id="L127">                        throw new MissingDeclaredSxmDependency(&quot;\nDeclared dependencies missing.\n&quot;</span>
+                                + &quot;Check &lt;uses sxm=\&quot;\&quot;/&gt; tag in your specifications.&quot;);
+                    }
+<span class="fc" id="L130">                    compileSpecifications(specificationFolderList, jsxmSpecRootDir, m2Home, tempTarget, testDirectory,</span>
+                            mode, kInput, sxmBaseImports, sxmImports, sxmBaseInheritance, javaDirectory, kList);
+                    
+<span class="fc" id="L133">                } else {</span>
+<span class="fc" id="L134">                    logger.error(&quot;Specification models not found.!&quot;);</span>
+<span class="fc" id="L135">                    throw new SpecificationModelsNotFoundException(&quot;\nSpecification models not found.!&quot;);</span>
+                }
+<span class="fc" id="L137">            } else {</span>
+<span class="fc" id="L138">                logger.error(&quot;Spec folder does not exist.&quot;);</span>
+<span class="fc" id="L139">                throw new SpecFolderNotFoundException(&quot;\nSpec folder does not exist.&quot;);</span>
+            }
+        }
+<span class="fc" id="L142">        long compilePhaseEnd = System.currentTimeMillis();</span>
+<span class="fc" id="L143">        long compilePhase = compilePhaseEnd - compilePhaseStart;</span>
+<span class="fc" id="L144">        logger.info(&quot;---  Compiling phase done : &quot; + compilePhase + &quot; ms&quot;);</span>
+<span class="fc" id="L145">    }</span>
+    
+    /**
+     * Compile specifications.
+     * 
+     * @param specificationFolderList
+     *            the specification folder list
+     * @param jsxmSpecRootDir
+     *            the jsxm spec root dir
+     * @param m2Home
+     *            the m2 home
+     * @param tempTarget
+     *            the temp target
+     * @param testDirectory
+     *            the test directory
+     * @param mode
+     *            the mode
+     * @param kInput
+     *            the k input
+     * @param sxmBaseImports
+     *            the sxm base imports
+     * @param sxmImports
+     *            the sxm imports
+     * @param sxmBaseInheritance
+     *            the sxm base inheritance
+     * @param javaDirectory
+     *            the java directory
+     * @param kList
+     *            the k list
+     */
+    private void compileSpecifications(List&lt;File&gt; specificationFolderList, String jsxmSpecRootDir, String m2Home,
+            String tempTarget, String testDirectory, String mode, String kInput, String sxmBaseImports,
+            String sxmImports, String sxmBaseInheritance, File javaDirectory, Properties kList) {
+        
+<span class="fc" id="L179">        ExecutorService compileJsxmExecutor = JSXMThreadPoolFactory.getInstance().getExecutor(JSXMThreadPoolFactory.getInstance().getCompilationThreadPool());</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        for (int i = 0; i &lt; specificationFolderList.size(); i++) {</span>
+<span class="fc" id="L181">            SxmCompilationThread sxmCompilationThread = new SxmCompilationThread();</span>
+<span class="fc" id="L182">            sxmCompilationThread.setJsxmSpecRootDir(jsxmSpecRootDir);</span>
+<span class="fc" id="L183">            sxmCompilationThread.setM2Home(m2Home);</span>
+<span class="fc" id="L184">            sxmCompilationThread.setTempTarget(tempTarget);</span>
+<span class="fc" id="L185">            sxmCompilationThread.setTestDirectory(testDirectory);</span>
+<span class="fc" id="L186">            sxmCompilationThread.setMode(mode);</span>
+<span class="fc" id="L187">            sxmCompilationThread.setkInput(kInput);</span>
+<span class="fc" id="L188">            sxmCompilationThread.setSxmBaseImports(sxmBaseImports);</span>
+<span class="fc" id="L189">            sxmCompilationThread.setSxmImports(sxmImports);</span>
+<span class="fc" id="L190">            sxmCompilationThread.setSxmBaseInheritance(sxmBaseInheritance);</span>
+<span class="fc" id="L191">            sxmCompilationThread.setJavaDirectory(javaDirectory);</span>
+<span class="fc" id="L192">            sxmCompilationThread.setkList(kList);</span>
+<span class="fc" id="L193">            sxmCompilationThread.setTempSpec(specificationFolderList.get(i));</span>
+<span class="fc" id="L194">            sxmCompilationThread.setJavaFiles(javaFiles);</span>
+<span class="fc" id="L195">            Runnable compileJsxmWorker = sxmCompilationThread;</span>
+<span class="fc" id="L196">            compileJsxmExecutor.execute(compileJsxmWorker);</span>
+        }
+        /*
+         * This will make the executor accept no new threads and finish all
+         * existing threads in queue
+         */
+<span class="fc" id="L202">        compileJsxmExecutor.shutdown();</span>
+        /*
+         * Waiting for threads to finish execution
+         */
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        while (!compileJsxmExecutor.isTerminated()) {</span>
+<span class="fc" id="L207">            logger.trace(&quot;Processing compilation threads&quot;);</span>
+        }
+<span class="fc" id="L209">    }</span>
+    
+    /**
+     * Check dependencies.
+     * 
+     * @param filename
+     *            the filename
+     * @param specDirectory
+     *            the spec directory
+     * @param specList
+     *            the spec list
+     */
+    private void checkDependencies(String filename, File specDirectory, List&lt;File&gt; specList) {
+<span class="fc" id="L222">        recheckDependencies(filename, specDirectory, specList);</span>
+<span class="fc" id="L223">    }</span>
+    
+    /**
+     * Recheck dependencies.
+     * 
+     * @param filename
+     *            the filename
+     * @param specDirectory
+     *            the spec directory
+     * @param specList
+     *            the spec list
+     */
+    private void recheckDependencies(String filename, File specDirectory, List&lt;File&gt; specList) {
+<span class="fc" id="L236">        List&lt;String&gt; usesDependecies = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L237">        List&lt;File&gt; jsxmFiles = new LinkedList&lt;File&gt;();</span>
+        
+<span class="fc" id="L239">        Document doc = org.jsxm.jsxmcore.util.XML.getDocXML(filename, &quot;Cannot read the JSXM file.&quot;, true);</span>
+<span class="fc" id="L240">        Element root = doc.getRootElement();</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (root.getChild(&quot;dependencies&quot;, Various.getInstance().getNameSpace()) == null) {</span>
+<span class="fc" id="L242">            logger.debug(&quot;Non dependent jsxm file&quot;);</span>
+        } else {
+<span class="fc" id="L244">            createNameListOfElements(root, usesDependecies, &quot;dependencies&quot;, &quot;uses&quot;, &quot;sxm&quot;, false);</span>
+<span class="fc" id="L245">            SxmFileUtils.traverseDirectoryWithExclusion(specDirectory, jsxmFiles, &quot;.xml&quot;);</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">            if (!usesDependecies.isEmpty()) {</span>
+<span class="fc" id="L247">                logger.debug(&quot;Dependencies declared &quot; + usesDependecies.size());</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">                for (int i = 0; i &lt; usesDependecies.size(); i++) {</span>
+<span class="fc" id="L249">                    boolean depedencyNotFound = true;</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">                    for (int j = 0; j &lt; jsxmFiles.size(); j++) {</span>
+<span class="fc" id="L251">                        logger.debug(&quot;Jsxm specification file &quot; + jsxmFiles.get(j).getName());</span>
+<span class="fc" id="L252">                        logger.debug(&quot;Dependency &quot; + usesDependecies.get(i));</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">                        if (jsxmFiles.get(j).getName().equals(usesDependecies.get(i) + &quot;.xml&quot;)) {</span>
+<span class="fc" id="L254">                            depedencyNotFound = false;</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">                            if (specList.contains(jsxmFiles.get(j))) {</span>
+<span class="fc" id="L256">                                logger.debug(&quot;Dependency &quot; + jsxmFiles.get(j) + &quot; already exists in list.&quot;);</span>
+                            } else {
+<span class="nc" id="L258">                                specList.add(jsxmFiles.get(j));</span>
+<span class="nc" id="L259">                                logger.debug(&quot;Found dependency &quot; + jsxmFiles.get(j).getName());</span>
+<span class="nc" id="L260">                                Document newDoc = org.jsxm.jsxmcore.util.XML.getDocXML(jsxmFiles.get(j)</span>
+                                        .getAbsolutePath(), &quot;Cannot read the JSXM file.&quot;, true);
+<span class="nc" id="L262">                                Element newRoot = newDoc.getRootElement();</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">                                if (newRoot.getChild(&quot;dependencies&quot;, Various.getInstance().getNameSpace()) == null) {</span>
+<span class="nc" id="L264">                                    logger.debug(&quot;Non dependent jsxm file&quot;);</span>
+                                } else {
+<span class="nc" id="L266">                                    checkDependencies(jsxmFiles.get(j).getAbsolutePath(), specDirectory, specList);</span>
+                                }
+                            }
+                        }
+                    }
+<span class="fc bfc" id="L271" title="All 2 branches covered.">                    if (depedencyNotFound) {</span>
+<span class="fc" id="L272">                        logger.debug(usesDependecies.get(i) + &quot; is not implememted&quot;);</span>
+<span class="fc" id="L273">                        missingDependencies.add(usesDependecies.get(i));</span>
+                    }
+                }
+            }
+        }
+<span class="fc" id="L278">    }</span>
+    
+    /**
+     * Creates the name list of elements.
+     * 
+     * @param root
+     *            the root
+     * @param names
+     *            the names
+     * @param listNameTag
+     *            the list name tag
+     * @param elementTag
+     *            the element tag
+     * @param attribute
+     *            the attribute
+     * @param compulsory
+     *            the compulsory
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    private void createNameListOfElements(Element root, List&lt;String&gt; names, String listNameTag, String elementTag,
+            String attribute, boolean compulsory) {
+<span class="fc" id="L299">        Element topElement = root.getChild(listNameTag, Various.getInstance().getNameSpace());</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        if (topElement == null) {</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">            if (compulsory) {</span>
+<span class="nc" id="L302">                specificationError(&quot;No &lt;&quot; + listNameTag + &quot;&gt; element.&quot;);</span>
+<span class="nc" id="L303">                throw new ElementMissingException(&quot;ElementMissingException:&quot; + &quot; No &lt;&quot; + listNameTag + &quot;&gt; element.&quot;);</span>
+            } else {
+<span class="nc" id="L305">                return;</span>
+            }
+        }
+<span class="fc" id="L308">        List&lt;Element&gt; elements = (List&lt;Element&gt;) topElement.getChildren(elementTag, Various.getInstance()</span>
+                .getNameSpace());
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">        if (elements.size() == 0) {</span>
+<span class="nc" id="L311">            specificationError(&quot;No &lt;&quot; + elementTag + &quot;&gt; elements.&quot;);</span>
+<span class="nc" id="L312">            throw new ElementChildrenMissingException(&quot;ElementChildrenException:&quot; + &quot; No &lt;&quot; + elementTag</span>
+                    + &quot;&gt; elements.&quot;);
+        }
+<span class="fc bfc" id="L315" title="All 2 branches covered.">        for (Element element : elements) {</span>
+<span class="fc" id="L316">            String name = element.getAttributeValue(attribute);</span>
+<span class="fc" id="L317">            names.add(name);</span>
+<span class="fc" id="L318">        }</span>
+<span class="fc" id="L319">    }</span>
+    
+    /**
+     * Specification error.
+     * 
+     * @param s
+     *            the s
+     */
+    private void specificationError(String s) {
+<span class="nc" id="L328">        logger.error(&quot;\nERROR in the specification:&quot;);</span>
+<span class="nc" id="L329">        logger.error(s);</span>
+<span class="nc" id="L330">        logger.error(&quot;\n&quot;);</span>
+<span class="nc" id="L331">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

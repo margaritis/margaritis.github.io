@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmCompilationController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.compilation.sxm.controllers</a> &gt; <span class="el_source">SxmCompilationController.java</span></div><h1>SxmCompilationController.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.compilation.sxm.controllers;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.tools.Diagnostic;
+import javax.tools.JavaFileObject;
+
+import org.jsxm.maven.plugin.jsxmtool.core.JSXM;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.SXMCompilationException;
+import org.jsxm.maven.plugin.jsxmtool.utilities.JSXMUtils;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmCompilationUtils;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmFileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+<span class="fc" id="L51">public class SxmCompilationController {</span>
+    
+<span class="fc" id="L53">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+    
+    /**
+     * Scan compilation errors.
+     */
+    public void scanCompilationErrors() {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (!JSXM.getInstance().getCompilationDiagnostics().isEmpty()) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            for (int j = 0; j &lt; JSXM.getInstance().getCompilationDiagnostics().size(); j++) {</span>
+<span class="fc" id="L61">                Diagnostic&lt;?&gt; diagnostic = JSXM.getInstance().getCompilationDiagnostics().get(j);</span>
+<span class="fc" id="L62">                File sxmFile = new File(((JavaFileObject) diagnostic.getSource()).getName());</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">                if (diagnostic.getKind().toString().equals(&quot;ERROR&quot;)) {</span>
+<span class="fc" id="L64">                    logger.error(&quot;\n&quot;);</span>
+<span class="fc" id="L65">                    logger.error(&quot;Compiler    --&gt; &quot; + diagnostic.getKind());</span>
+<span class="fc" id="L66">                    logger.error(&quot;Line Number --&gt; &quot; + diagnostic.getLineNumber());</span>
+<span class="fc" id="L67">                    logger.error(&quot;Message     --&gt;&quot; + diagnostic.getMessage(null));</span>
+<span class="fc" id="L68">                    logger.error(&quot;Source      --&gt;&quot; + sxmFile.getName() + &quot;\n&quot;);</span>
+                } else {
+<span class="fc" id="L70">                    logger.warn(&quot;Compiler     --&gt;&quot; + diagnostic.getKind());</span>
+<span class="fc" id="L71">                    logger.warn(&quot;Message     --&gt;&quot; + diagnostic.getMessage(null) + &quot;\n&quot;);</span>
+                }
+            }
+        } else {
+<span class="nc" id="L75">            logger.debug(&quot;Compiled without errors and warnings&quot;);</span>
+        }
+<span class="fc" id="L77">    }</span>
+    
+    /**
+     * Given a directory it compiles all the SXM.java and SXM_base.java files in
+     * that directory.
+     * 
+     * @param tempTarget
+     *            the temp target
+     */
+    public void compileSxmJavaFiles(String tempTarget) {
+<span class="fc" id="L87">        List&lt;File&gt; sxmNames = new LinkedList&lt;File&gt;();</span>
+<span class="fc" id="L88">        List&lt;File&gt; sxmBaseNames = new LinkedList&lt;File&gt;();</span>
+<span class="fc" id="L89">        List&lt;File&gt; names = new LinkedList&lt;File&gt;();</span>
+<span class="fc" id="L90">        List&lt;String&gt; uncompiledFiles = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L91">        String tempDirectory = tempTarget + JSXMUtils.FILE_SEPARATOR + &quot;temp&quot; + JSXMUtils.FILE_SEPARATOR;</span>
+<span class="fc" id="L92">        logger.debug(tempDirectory);</span>
+<span class="fc" id="L93">        String typesDirectory = tempDirectory + &quot;org&quot; + JSXMUtils.FILE_SEPARATOR + &quot;jsxm&quot;</span>
+                + JSXMUtils.FILE_SEPARATOR + &quot;jsxmcore&quot; + JSXMUtils.FILE_SEPARATOR + &quot;types&quot;
+                + JSXMUtils.FILE_SEPARATOR;
+<span class="fc" id="L96">        logger.debug(typesDirectory);</span>
+        
+<span class="fc" id="L98">        SxmFileUtils.traverseDirectory(new File(tempDirectory), sxmNames, &quot;SXM.java&quot;);</span>
+<span class="fc" id="L99">        SxmFileUtils.traverseDirectory(new File(tempDirectory), sxmBaseNames, &quot;SXM_base.java&quot;);</span>
+<span class="fc" id="L100">        names.addAll(sxmNames);</span>
+<span class="fc" id="L101">        logger.debug(sxmNames.toString());</span>
+<span class="fc" id="L102">        names.addAll(sxmBaseNames);</span>
+<span class="fc" id="L103">        logger.debug(sxmBaseNames.toString());</span>
+        
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if (!names.isEmpty()) {</span>
+<span class="fc" id="L106">            SxmCompilationUtils.compileListOfFiles(names, tempDirectory);</span>
+        }
+<span class="fc" id="L108">        int extensionLenght = JSXM.JAVA_EXTENSION_LENGTH;</span>
+<span class="fc" id="L109">        String classExtension = &quot;.class&quot;;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (int i = 0; i &lt; names.size(); i++) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">            if (!new File(typesDirectory</span>
+                    + SxmCompilationUtils.extractSourceClass(names.get(i).getName(), extensionLenght) + classExtension)
+                    .exists()) {
+<span class="fc" id="L114">                uncompiledFiles.add(typesDirectory</span>
+                        + SxmCompilationUtils.extractSourceClass(names.get(i).getName(), extensionLenght)
+                        + classExtension);
+<span class="fc" id="L117">                logger.error(&quot;SXM Class &quot; + typesDirectory</span>
+                        + SxmCompilationUtils.extractSourceClass(names.get(i).getName(), extensionLenght)
+                        + classExtension + &quot; has not be compiled.&quot;);
+            }
+        }
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (!uncompiledFiles.isEmpty()) {</span>
+<span class="fc" id="L123">            scanCompilationErrors();</span>
+<span class="fc" id="L124">            throw new SXMCompilationException(&quot;\nSXMCompilationException: Compilation errors.&quot;);</span>
+        }
+<span class="fc" id="L126">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

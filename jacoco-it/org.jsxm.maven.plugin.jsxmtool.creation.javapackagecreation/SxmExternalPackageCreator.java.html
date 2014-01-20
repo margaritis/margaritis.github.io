@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmExternalPackageCreator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.creation.javapackagecreation</a> &gt; <span class="el_source">SxmExternalPackageCreator.java</span></div><h1>SxmExternalPackageCreator.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.creation.javapackagecreation;
+
+import java.net.URL;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.jsxm.maven.plugin.jsxmtool.core.JSXM;
+import org.jsxm.maven.plugin.jsxmtool.core.JSXMThreadPoolFactory;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.SxmPackageLimitException;
+import org.jsxm.maven.plugin.jsxmtool.utilities.JSXMUtils;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public class SxmExternalPackageCreator extends SxmPackageStructureCreator implements SxmPackageCreator {
+    
+<span class="fc" id="L57">    private List&lt;String&gt; externalPackageList = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L58">    private List&lt;Reflections&gt; reflectionsList = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L59">    private List&lt;Set&lt;String&gt;&gt; classesList = new LinkedList&lt;&gt;();</span>
+    
+<span class="fc" id="L61">    protected SxmExternalPackageCreator() {</span>
+        
+<span class="fc" id="L63">    }</span>
+    
+    @Override
+    public void createSpecificationsFromPackages(String baseDir) {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        for (String packageString : externalPackageList) {</span>
+<span class="fc" id="L68">            getLogger().info(&quot;Checking &quot; + packageString);</span>
+<span class="fc" id="L69">            Set&lt;String&gt; setOfClasses = getClassesFromExternalJavaPackage(packageString, reflectionsList);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">            if (setOfClasses.isEmpty()) {</span>
+<span class="nc" id="L71">                getLogger().error(&quot;The package &quot; + packageString + &quot; you are trying to load is not in any classpath&quot;);</span>
+            } else {
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">                if (setOfClasses.size() &lt; JSXM.EXTERNAL_PACKAGE_LIMIT) {</span>
+<span class="fc" id="L74">                    classesList.add(setOfClasses);</span>
+<span class="fc" id="L75">                    getLogger().info(&quot;Package  &quot; + packageString + &quot; contains &quot; + setOfClasses.size() + &quot; classes.&quot;);</span>
+                }
+            }
+<span class="fc" id="L78">        }</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for (Set&lt;String&gt; retrievedClasses : classesList) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            for (String retrievedClass : retrievedClasses) {</span>
+<span class="fc" id="L81">                String specificationName = retrievedClass.substring(retrievedClass.lastIndexOf(&quot;.&quot;) + 1);</span>
+<span class="fc" id="L82">                getLogger().debug(&quot;RetrievedClass &quot; + retrievedClass + &quot; with lenght: &quot; + retrievedClass.length());</span>
+<span class="fc" id="L83">                getLogger().debug(</span>
+                        &quot;SpecificationName &quot; + specificationName + &quot; with lenght: &quot; + specificationName.length());
+<span class="fc" id="L85">                int packageLenght = retrievedClass.length() - specificationName.length();</span>
+<span class="fc" id="L86">                String packageStringPrepared = getFileSeparator() + retrievedClass.substring(0, packageLenght);</span>
+<span class="fc" id="L87">                getLogger().debug(&quot;Package lenght &quot; + packageLenght);</span>
+<span class="fc" id="L88">                getLogger().debug(&quot;Package: &quot; + packageStringPrepared);</span>
+<span class="fc" id="L89">                getLogger().debug(&quot;SpecificationName: &quot; + specificationName);</span>
+<span class="fc" id="L90">                getLogger().debug(JSXMUtils.replaceDotWithSlash(packageStringPrepared));</span>
+<span class="fc" id="L91">                createSpecificationFoldersTemplates(specificationName,</span>
+                        JSXMUtils.replaceDotWithSlash(packageStringPrepared), baseDir);
+                
+//                Method[] publicMethods=null;
+//                try {
+//                    publicMethods = Class.forName(packageString+specificationName).getMethods();
+//                } catch (SecurityException | ClassNotFoundException e) {
+//                    getLogger().error(&quot;Unable to load methods of {}&quot;,specificationName);
+//                }
+//                getLogger().debug(&quot;{}&quot;,Arrays.toString(publicMethods));
+<span class="fc" id="L101">            }</span>
+<span class="fc" id="L102">        }</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (!isPackageFlag()) {</span>
+<span class="fc" id="L104">            getLogger().info(&quot;Nothing to create.&quot;);</span>
+        }
+        
+<span class="fc" id="L107">    }</span>
+    
+    /**
+     * Gets the classes from external java package.
+     * 
+     * @param packageString
+     *            the package string
+     * @param reflectionsList
+     *            the reflections list
+     * @return the classes from external package
+     */
+    private Set&lt;String&gt; getClassesFromExternalJavaPackage(String packageString, List&lt;Reflections&gt; reflectionsList) {
+<span class="fc" id="L119">        List&lt;ClassLoader&gt; classLoadersList = new LinkedList&lt;ClassLoader&gt;();</span>
+<span class="fc" id="L120">        classLoadersList.add(ClasspathHelper.contextClassLoader());</span>
+<span class="fc" id="L121">        classLoadersList.add(ClasspathHelper.staticClassLoader());</span>
+        
+<span class="fc" id="L123">        FilterBuilder filter = new FilterBuilder();</span>
+<span class="fc" id="L124">        filter.include(FilterBuilder.prefix(packageString));</span>
+        /*
+         * filter.exclude(FilterBuilder.prefix(&quot;&quot;)); Future use for specific
+         * package exclusion
+         */
+        
+<span class="fc" id="L130">        Set&lt;URL&gt; urlsToLoad = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L131">        urlsToLoad.addAll(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[classLoadersList.size()])));</span>
+<span class="fc" id="L132">        urlsToLoad.add(ClasspathHelper.forClass(Object.class));</span>
+        
+
+        
+        
+<span class="fc" id="L137">        ExecutorService packageExecutor=JSXMThreadPoolFactory.getInstance().getExecutor(JSXMThreadPoolFactory.getInstance().getExternalPackageCreationThreadPool());</span>
+<span class="fc" id="L138">        getLogger().debug(&quot;External package executor: {}&quot;,packageExecutor);</span>
+<span class="fc" id="L139">        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder()</span>
+        .setScanners(new SubTypesScanner(false), new ResourcesScanner()).setUrls(urlsToLoad)
+        .filterInputsBy(filter)
+        
+        /*
+         * TODO
+         * .setExecutorService(packageExecutor)
+         * Set executor service is currently removed  
+         * from external package creation since it creates problems with junit
+         * tests. In normal operation the executor function as expected
+         * but since it fails in JUnit it limits the coverage of tests.
+         * When the issue is resolved the executor will return to the builder call
+         * for increased performance.
+         */
+        ;
+         
+<span class="fc" id="L155">        Reflections reflections = new Reflections(configurationBuilder);</span>
+<span class="fc" id="L156">        reflectionsList.add(reflections);</span>
+<span class="fc" id="L157">        Set&lt;String&gt; classesToLoad = reflections.getStore().getSubTypesOf(Object.class.getName());</span>
+        
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (classesToLoad.size() &gt; JSXM.EXTERNAL_PACKAGE_LIMIT) {</span>
+<span class="fc" id="L160">            getLogger().error(</span>
+                    &quot;Package declared exceeds the limit of 80 classes. Please specify a smaller package for copying\n&quot;);
+<span class="fc" id="L162">            throw new SxmPackageLimitException(</span>
+                    &quot;\nPackage declared exceeds the limit of 80 classes.\n Please specify a smaller package for copying.&quot;);
+        }
+        
+        // Set&lt;Class&lt;? extends AbstractMojo&gt;&gt; classesToLoad =
+        // reflections.getSubTypesOf(AbstractMojo.class);
+<span class="fc" id="L168">        return classesToLoad;</span>
+    }
+    
+    /**
+     * Gets the classes from package.
+     * 
+     * @param externalPackageList
+     *            the external package list
+     * @return the classes from package
+     */
+    @Deprecated
+    public void getClassesFromPackage(List&lt;String&gt; externalPackageList) {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        for (String packageString : externalPackageList) {</span>
+<span class="nc" id="L181">            Set&lt;String&gt; setOfClasses = getClassesFromDefaultClassLoader(packageString);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if (setOfClasses.isEmpty()) {</span>
+<span class="nc" id="L183">                Set&lt;String&gt; setOfClassloaderClasses = getClassesFromContextClassLoader(packageString);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                if (setOfClassloaderClasses.isEmpty()) {</span>
+<span class="nc" id="L185">                    getLogger().error(</span>
+                            &quot;The package &quot; + packageString + &quot; you are trying to load is not in any classpath&quot;);
+                } else {
+<span class="nc" id="L188">                    classesList.add(setOfClassloaderClasses);</span>
+<span class="nc" id="L189">                    getLogger().info(&quot;Package  &quot; + packageString + &quot; contains &quot; + setOfClassloaderClasses.size());</span>
+                }
+<span class="nc" id="L191">            } else {</span>
+<span class="nc" id="L192">                classesList.add(setOfClasses);</span>
+<span class="nc" id="L193">                getLogger().info(&quot;Package  &quot; + packageString + &quot; contains &quot; + setOfClasses.size());</span>
+            }
+<span class="nc" id="L195">        }</span>
+<span class="nc" id="L196">    }</span>
+    
+    /**
+     * Gets the classes from default class loader.
+     * 
+     * @param packageString
+     *            the package string
+     * @return the classes from default class loader
+     */
+    @Deprecated
+    private Set&lt;String&gt; getClassesFromDefaultClassLoader(String packageString) {
+<span class="nc" id="L207">        FilterBuilder filter = new FilterBuilder();</span>
+<span class="nc" id="L208">        filter.include(FilterBuilder.prefix(packageString));</span>
+        /*
+         * filter.exclude(FilterBuilder.prefix(&quot;&quot;)); Future use for specific
+         * package exclusion
+         */
+        
+<span class="nc" id="L214">        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder()</span>
+        .setScanners(new SubTypesScanner(false), new ResourcesScanner())
+        .setUrls(ClasspathHelper.forClass(Object.class)).filterInputsBy(filter)
+        .setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        
+<span class="nc" id="L219">        Reflections reflections = new Reflections(configurationBuilder);</span>
+<span class="nc" id="L220">        Set&lt;String&gt; classesToLoad = reflections.getStore().getSubTypesOf(Object.class.getName());</span>
+        
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        if (classesToLoad.size() &gt; JSXM.EXTERNAL_PACKAGE_LIMIT) {</span>
+<span class="nc" id="L223">            getLogger().error(</span>
+                    &quot;Package declared exceeds the limit of 80 classes. Please specify a smaller package for copying\n&quot;);
+<span class="nc" id="L225">            throw new SxmPackageLimitException(</span>
+                    &quot;\nPackage declared exceeds the limit of 80 classes.\n Please specify a smaller package for copying.&quot;);
+        }
+<span class="nc" id="L228">        return classesToLoad;</span>
+    }
+    
+    /**
+     * Gets the classes from context class loader.
+     * 
+     * @param packageString
+     *            the package string
+     * @return the classes from context class loader
+     */
+    @Deprecated
+    private Set&lt;String&gt; getClassesFromContextClassLoader(String packageString) {
+<span class="nc" id="L240">        List&lt;ClassLoader&gt; classLoadersList = new LinkedList&lt;ClassLoader&gt;();</span>
+<span class="nc" id="L241">        classLoadersList.add(ClasspathHelper.contextClassLoader());</span>
+<span class="nc" id="L242">        classLoadersList.add(ClasspathHelper.staticClassLoader());</span>
+        
+<span class="nc" id="L244">        FilterBuilder filter = new FilterBuilder();</span>
+<span class="nc" id="L245">        filter.include(FilterBuilder.prefix(packageString));</span>
+        /*
+         * filter.exclude(FilterBuilder.prefix(&quot;&quot;)); Future use for specific
+         * package exclusion
+         */
+        
+<span class="nc" id="L251">        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder()</span>
+        .setScanners(new SubTypesScanner(false), new ResourcesScanner())
+        .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[classLoadersList.size()])))
+        .filterInputsBy(filter)
+        .setExecutorService(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+        
+<span class="nc" id="L257">        Reflections reflections = new Reflections(configurationBuilder);</span>
+<span class="nc" id="L258">        Set&lt;String&gt; classesToLoad = reflections.getStore().getSubTypesOf(Object.class.getName());</span>
+        
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        if (classesToLoad.size() &gt; JSXM.EXTERNAL_PACKAGE_LIMIT) {</span>
+<span class="nc" id="L261">            getLogger().error(</span>
+                    &quot;Package declared exceeds the limit of 80 classes. Please specify a smaller package for copying\n&quot;);
+<span class="nc" id="L263">            throw new SxmPackageLimitException(</span>
+                    &quot;\nPackage declared exceeds the limit of 80 classes.\n Please specify a smaller package for copying.&quot;);
+        }
+<span class="nc" id="L266">        return classesToLoad;</span>
+    }
+    
+    public List&lt;String&gt; getExternalPackageList() {
+<span class="nc" id="L270">        return externalPackageList;</span>
+    }
+    
+    public void setExternalPackageList(List&lt;String&gt; externalPackageList) {
+<span class="fc" id="L274">        this.externalPackageList = externalPackageList;</span>
+<span class="fc" id="L275">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

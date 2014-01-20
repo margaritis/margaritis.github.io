@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmGenerator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.generation</a> &gt; <span class="el_source">SxmGenerator.java</span></div><h1>SxmGenerator.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.generation;
+
+import java.io.File;
+
+import org.jsxm.jsxmcore.exceptions.DefinitionNotFoundException;
+import org.jsxm.jsxmcore.testcasegenerators.SXMTestGeneration;
+import org.jsxm.maven.plugin.jsxmtool.core.Specification;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.SXMCompilationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public class SxmGenerator {
+    
+<span class="fc" id="L47">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+<span class="fc" id="L48">    private static final Object GENERATE_LOCK = new Object();</span>
+<span class="fc" id="L49">    private final SXMTestGeneration testGen = new SXMTestGeneration();</span>
+    
+    /**
+     * Instantiates a new sxm generator.
+     */
+<span class="fc" id="L54">    public SxmGenerator() {</span>
+        
+<span class="fc" id="L56">    }</span>
+    
+    /**
+     * Generate.
+     * 
+     * @param p
+     *            the specification
+     * @throws DefinitionNotFoundException
+     *             the definition not found exception
+     */
+    public void generate(Specification p) throws DefinitionNotFoundException {
+<span class="fc" id="L67">        String setsFileName = p.getSpecificationDirectory() + p.getClassName() + &quot;_sets.xml&quot;;</span>
+<span class="fc" id="L68">        String xmlFileName = p.getTestsDirectory() + p.getClassName() + &quot;_test.xml&quot;;</span>
+<span class="fc" id="L69">        String classFile = &quot;org.jsxm.jsxmcore.types.&quot; + p.getClassName() + &quot;SXM&quot;;</span>
+<span class="fc" id="L70">        generateTests(setsFileName, xmlFileName, classFile, p);</span>
+<span class="fc" id="L71">    }</span>
+    
+    /**
+     * Generate tests.
+     * 
+     * @param setsFileName
+     *            the sets file name
+     * @param xmlFileName
+     *            the xml file name
+     * @param classFile
+     *            the class file
+     * @param p
+     *            the p
+     * @throws DefinitionNotFoundException
+     *             the definition not found exception
+     */
+    private void generateTests(String setsFileName, String xmlFileName, String classFile, Specification p)
+            throws DefinitionNotFoundException {
+<span class="fc" id="L89">        int k = Integer.parseInt(p.getkInput());</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (p.getMode().equals(&quot;verbose&quot;)) {</span>
+<span class="fc" id="L91">            synchronized (GENERATE_LOCK) {</span>
+<span class="fc" id="L92">                logger.info(&quot;verbose mode on&quot;);</span>
+<span class="fc" id="L93">                logger.info(&quot;k = &quot; + k);</span>
+<span class="fc" id="L94">                logger.info(&quot;sets  = &quot; + setsFileName);</span>
+<span class="fc" id="L95">                logger.info(&quot;XML output file  = &quot; + xmlFileName);</span>
+<span class="pc" id="L96">            }</span>
+        }
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        if (new File(p.getTypesDirectory() + p.getClassName() + &quot;SXM.class&quot;).exists()) {</span>
+<span class="fc" id="L99">            logger.debug(&quot;&quot; + testGen);</span>
+<span class="fc" id="L100">            testGen.generateTests(k, setsFileName, xmlFileName, classFile);</span>
+<span class="fc" id="L101">            synchronized (GENERATE_LOCK) {</span>
+<span class="fc" id="L102">                logger.info(&quot;           --&gt;SXM     Class : &quot; + p.getClassName() + &quot;SXM.java&quot;);</span>
+<span class="fc" id="L103">                logger.info(&quot;           --&gt;SXMBase Class : &quot; + p.getClassName() + &quot;SXM_base.java&quot;);</span>
+<span class="fc" id="L104">                logger.info(&quot;           ###&quot; + p.getClassName() +&quot; tests generated successfully###\n&quot;);</span>
+<span class="pc" id="L105">            }</span>
+        } else {
+<span class="nc" id="L107">            synchronized (GENERATE_LOCK) {</span>
+<span class="nc" id="L108">                logger.error(&quot;SXM Class &quot; + p.getTypesDirectory() + p.getClassName() + &quot;SXM.class&quot;</span>
+                        + &quot; has not been compiled.&quot;);
+<span class="nc" id="L110">                logger.error(&quot;Test Generation for &quot; + xmlFileName + &quot; cancelled.&quot;);</span>
+<span class="nc" id="L111">                throw new SXMCompilationException(&quot;\nSXMCompilationException: Compilation errors.&quot;);</span>
+<span class="nc" id="L112">            }</span>
+        }
+<span class="fc" id="L114">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

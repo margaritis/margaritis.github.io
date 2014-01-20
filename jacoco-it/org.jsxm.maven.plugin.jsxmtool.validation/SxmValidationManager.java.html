@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmValidationManager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.validation</a> &gt; <span class="el_source">SxmValidationManager.java</span></div><h1>SxmValidationManager.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.validation;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.ExecutorService;
+
+import org.jsxm.maven.plugin.jsxmtool.core.JSXM;
+import org.jsxm.maven.plugin.jsxmtool.core.JSXMThreadPoolFactory;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.XMLValidationException;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmCompilationUtils;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmFileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public final class SxmValidationManager {
+    /**
+     * 
+     */
+<span class="fc" id="L59">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+    
+<span class="fc" id="L61">    private SxmValidationManager() {</span>
+<span class="fc" id="L62">    }</span>
+    
+    /**
+     * The Class LazyHolder.
+     */
+<span class="nc" id="L67">    private static class LazyHolder {</span>
+<span class="fc" id="L68">        private static final SxmValidationManager INSTANCE = new SxmValidationManager();</span>
+    }
+    
+    /**
+     * Gets the single instance of SxmValidationManager.
+     *
+     * @return single instance of SxmValidationManager
+     */
+    public static SxmValidationManager getInstance() {
+<span class="fc" id="L77">        return LazyHolder.INSTANCE;</span>
+    }
+    
+    /** The success files. */
+<span class="fc" id="L81">    private List&lt;File&gt; successFiles = new LinkedList&lt;File&gt;();</span>
+    
+    /** The failed files. */
+<span class="fc" id="L84">    private List&lt;File&gt; failedFiles = new LinkedList&lt;File&gt;();</span>
+    
+    /**
+     * Validate jsxm.
+     * 
+     * @param jsxmSpecRootDir
+     *            the jsxm spec root dir
+     * @param testDirectory
+     *            the test directory
+     */
+    public void validateJSXM(String jsxmSpecRootDir, String testDirectory) {
+<span class="fc" id="L95">        long validatePhaseStart = System.currentTimeMillis();</span>
+<span class="fc" id="L96">        File specDirectory = new File(jsxmSpecRootDir);</span>
+<span class="fc" id="L97">        List&lt;File&gt; definitionsSetsSpecifications = new LinkedList&lt;File&gt;();</span>
+<span class="fc" id="L98">        SxmFileUtils.traverseDirectory(specDirectory, definitionsSetsSpecifications, &quot;.xml&quot;);</span>
+        
+        @SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+<span class="fc" id="L101">        ListIterator&lt;File&gt; iteratorSpecDef = (ListIterator) definitionsSetsSpecifications.iterator();</span>
+<span class="fc" id="L102">        validateSchemas(iteratorSpecDef);</span>
+<span class="fc" id="L103">        checkValidatedFiles(testDirectory, failedFiles);</span>
+<span class="fc" id="L104">        long validatePhaseEnd = System.currentTimeMillis();</span>
+<span class="fc" id="L105">        long validatePhase = validatePhaseEnd - validatePhaseStart;</span>
+<span class="fc" id="L106">        logger.info(&quot;---  Validating phase done : &quot; + validatePhase + &quot; ms&quot;);</span>
+<span class="fc" id="L107">    }</span>
+    
+    /**
+     * Check validated files.
+     * 
+     * @param testDirectory
+     *            the test directory
+     * @param failedFiles
+     *            the failed files
+     */
+    public void checkValidatedFiles(String testDirectory, List&lt;File&gt; failedFiles) {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (!failedFiles.isEmpty()) {</span>
+<span class="fc" id="L119">            JSXM.getInstance().setValidate(false);</span>
+<span class="fc" id="L120">            deleteTestsOnFailure(failedFiles, testDirectory);</span>
+<span class="fc" id="L121">            logger.error(&quot;Validation ended with errors. Resolve errors in order to continue with compilation.&quot;);</span>
+<span class="fc" id="L122">            throw new XMLValidationException(&quot;\nValidation errors.&quot;);</span>
+        } else {
+<span class="fc" id="L124">            JSXM.getInstance().setValidate(true);</span>
+<span class="fc" id="L125">            logger.info(&quot;---  Validation completed successfully.!&quot;);</span>
+        }
+<span class="fc" id="L127">    }</span>
+    
+    /**
+     * Validate schemas.
+     * 
+     * @param iterator
+     *            the iterator
+     */
+    private void validateSchemas(ListIterator&lt;File&gt; iterator) {
+<span class="fc" id="L136">        ExecutorService validateJsxmExecutor = JSXMThreadPoolFactory.getInstance().getExecutor(JSXMThreadPoolFactory.getInstance().getValidationThreadPool());</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
+<span class="fc" id="L138">            File temp = iterator.next();</span>
+<span class="fc" id="L139">            Runnable validateJsxmWorker = new SxmValidationThread(temp);</span>
+<span class="fc" id="L140">            validateJsxmExecutor.execute(validateJsxmWorker);</span>
+<span class="fc" id="L141">        }</span>
+        /*
+         * This will make the executor accept no new threads and finish all
+         * existing threads in queue
+         */
+<span class="fc" id="L146">        validateJsxmExecutor.shutdown();</span>
+        /*
+         * Waiting for threads to finish execution
+         */
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        while (!validateJsxmExecutor.isTerminated()) {</span>
+<span class="fc" id="L151">            logger.trace(&quot;Processing validation threads&quot;);</span>
+        }
+<span class="fc" id="L153">    }</span>
+    
+    /**
+     * Checks connections to www.jsxm.org. Initially a HttpURLConnection is
+     * opened and attempts to connect to www.jsxm.org. The connection has also
+     * read and connect time out for preventing delays. The timeout time is 0.5
+     * seconds. It returns false when the connection is successful and true
+     * otherwise.
+     * 
+     * @return
+     */
+    @Deprecated
+    public boolean checkConnection() {
+        final URL url;
+<span class="nc" id="L167">        final int timeOutTime = 500;</span>
+        try {
+<span class="nc" id="L169">            url = new URL(&quot;http://www.jsxm.org&quot;);</span>
+<span class="nc" id="L170">            HttpURLConnection con = (HttpURLConnection) url.openConnection();</span>
+<span class="nc" id="L171">            con.setConnectTimeout(timeOutTime);</span>
+<span class="nc" id="L172">            con.setReadTimeout(timeOutTime);</span>
+<span class="nc" id="L173">            con.connect();</span>
+<span class="nc" id="L174">            logger.debug(&quot;Connection with &quot; + url + &quot; was successfull. Responce code: &quot; + con.getResponseCode());</span>
+<span class="nc" id="L175">            return false;</span>
+<span class="nc" id="L176">        } catch (MalformedURLException e) {</span>
+<span class="nc" id="L177">            logger.debug(&quot;MalformedURLException at &quot; + new Date(System.currentTimeMillis()).toString());</span>
+<span class="nc" id="L178">            logger.info(&quot;XSD schemas from www.jsxm.org are resolved locally.&quot;);</span>
+<span class="nc" id="L179">            return true;</span>
+<span class="nc" id="L180">        } catch (IOException e) {</span>
+<span class="nc" id="L181">            logger.debug(&quot;IOException at &quot; + new Date(System.currentTimeMillis()).toString());</span>
+<span class="nc" id="L182">            logger.info(&quot;XSD schemas from www.jsxm.org are resolved locally.&quot;);</span>
+<span class="nc" id="L183">            return true;</span>
+        }
+    }
+    
+    /**
+     * Delete tests on failure.
+     * 
+     * @param specificationFolderList
+     *            the specification folder list
+     * @param testDirectory
+     *            the test directory
+     */
+    public void deleteTestsOnFailure(List&lt;File&gt; specificationFolderList, String testDirectory) {
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        for (int i = 0; i &lt; specificationFolderList.size(); i++) {</span>
+<span class="fc" id="L197">            StringBuilder temp = SxmFileUtils.findPathToParent(specificationFolderList.get(i), &quot;spec&quot;,</span>
+                    new StringBuilder());
+<span class="fc" id="L199">            String className = &quot;&quot;;</span>
+            
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">            if (SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                    JSXM.SPECIFICATION_EXTENSION_LENGTH).contains(&quot;_input&quot;)) {
+<span class="nc" id="L203">                className = SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH).replace(&quot;_input&quot;, &quot;&quot;);
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">            } else if (SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                    JSXM.SPECIFICATION_EXTENSION_LENGTH).contains(&quot;_output&quot;)) {
+<span class="nc" id="L207">                className = SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH).replace(&quot;_output&quot;, &quot;&quot;);
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">            } else if (SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                    JSXM.SPECIFICATION_EXTENSION_LENGTH).contains(&quot;_test&quot;)) {
+<span class="nc" id="L211">                className = SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH).replace(&quot;_test&quot;, &quot;&quot;);
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">            } else if (SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                    JSXM.SPECIFICATION_EXTENSION_LENGTH).contains(&quot;_sets&quot;)) {
+<span class="nc" id="L215">                className = SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH).replace(&quot;_sets&quot;, &quot;&quot;);
+            } else {
+<span class="fc" id="L218">                className = SxmCompilationUtils.extractSourceClass(specificationFolderList.get(i).getName(),</span>
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH);
+            }
+<span class="fc" id="L221">            logger.debug(&quot;Checking file : &quot; + testDirectory + temp + className + &quot;JsxmAdapterTest.java&quot;);</span>
+            
+<span class="fc" id="L223">            File tempFile = new File(testDirectory + temp + className + &quot;JsxmAdapterTest.java&quot;);</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">            if (tempFile.exists()) {</span>
+<span class="nc" id="L225">                logger.error(&quot;Deleting test file&quot; + tempFile + &quot; due to validation errors&quot;);</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">                if (tempFile.delete()) {</span>
+<span class="nc" id="L227">                    logger.debug(&quot;File deleted&quot;);</span>
+                }
+            }
+        }
+<span class="fc" id="L231">    }</span>
+    
+    public List&lt;File&gt; getSuccessFiles() {
+<span class="fc" id="L234">        return successFiles;</span>
+    }
+    
+    public void setSuccessFiles(List&lt;File&gt; successFiles) {
+<span class="nc" id="L238">        this.successFiles = successFiles;</span>
+<span class="nc" id="L239">    }</span>
+    
+    public List&lt;File&gt; getFailedFiles() {
+<span class="fc" id="L242">        return failedFiles;</span>
+    }
+    
+    public void setFailedFiles(List&lt;File&gt; failedFiles) {
+<span class="nc" id="L246">        this.failedFiles = failedFiles;</span>
+<span class="nc" id="L247">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

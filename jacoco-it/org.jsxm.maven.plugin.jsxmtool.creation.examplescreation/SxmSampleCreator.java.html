@@ -1,0 +1,782 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmSampleCreator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.creation.examplescreation</a> &gt; <span class="el_source">SxmSampleCreator.java</span></div><h1>SxmSampleCreator.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyRight law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyRight notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.creation.examplescreation;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.jdom.Attribute;
+import org.jdom.Comment;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jsxm.jsxmcore.util.Various;
+import org.jsxm.maven.plugin.jsxmtool.utilities.JSXMUtils;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmFileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public class SxmSampleCreator {
+    
+<span class="fc" id="L55">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+<span class="fc" id="L56">    private final String fileSeparator = System.getProperty(&quot;file.separator&quot;);</span>
+<span class="fc" id="L57">    private String javaImplementation = null;</span>
+<span class="fc" id="L58">    private StringBuilder javaImplementationContents = new StringBuilder();</span>
+<span class="fc" id="L59">    private String javaAdapter = null;</span>
+<span class="fc" id="L60">    private StringBuilder javaAdapterContents = new StringBuilder();</span>
+<span class="fc" id="L61">    private int indent = 0;</span>
+    
+    private List&lt;String&gt; jsxmList;
+<span class="fc" id="L64">    private List&lt;String&gt; rootFolders = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L65">    private List&lt;File&gt; javaFileFolders = new LinkedList&lt;File&gt;();</span>
+    private static final String NEW_JAVADOD_LINE = &quot;*\n&quot;;
+    private static final String NEW_LINE = &quot;\n&quot;;
+    private static final String JAVADOC_START = &quot;/**&quot;;
+    private static final String JAVADOC_END = &quot;*/&quot;;
+    
+    private static final String INITIAL = &quot;initial&quot;;
+    private static final String MIDDLE = &quot;middle&quot;;
+    private static final String TERMINAL = &quot;terminal&quot;;
+    
+    private static final String START_AUTOMATON = &quot;startAutomaton&quot;;
+    private static final String STOP_AUTOMATON = &quot;stopAutomaton&quot;;
+    private static final String RESET_AUTOMATON = &quot;resetAutomaton&quot;;
+    
+    private static final String START_ERROR = &quot;startError&quot;;
+    private static final String STOP_ERROR = &quot;stopError&quot;;
+    private static final String RESET_ERROR = &quot;resetError&quot;;
+    
+    private static final String START_FAULT = &quot;startAutomaton_Error&quot;;
+    private static final String STOP_FAULT = &quot;stopAutomaton_Error&quot;;
+    private static final String RESET_FAULT = &quot;resetAutomaton_Error&quot;;
+    
+    private static final String START_OUTPUT = &quot;startOut&quot;;
+    private static final String STOP_OUTPUT = &quot;stopOut&quot;;
+    private static final String RESET_OUTPUT = &quot;resetOut&quot;;
+    
+    private static final String SEQUENCE_ELEMENT = &quot;sequence&quot;;
+    private static final String NAME_ATRRIBUTE = &quot;name&quot;;
+    private static final String FUNCTION_ELEMENT = &quot;function&quot;;
+    
+    private static final String SPECIFICATION_DIRECTORY = &quot;specification&quot;;
+    
+<span class="fc" id="L97">    private String copyRight = JAVADOC_START</span>
+            + &quot;* JSXM Maven PLugin CONFIDENTIAL&quot;
+            + NEW_JAVADOD_LINE
+            + &quot;*  __________________&quot;
+            + NEW_LINE
+            + NEW_JAVADOD_LINE
+            + &quot;* Unpublished Copyright © 2010-2013 Konstantinos Margaritis, &quot;
+            + NEW_LINE
+            + &quot;* All Rights Reserved.&quot;
+            + NEW_LINE
+            + NEW_JAVADOD_LINE
+            + &quot;* NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis .&quot;
+            + NEW_LINE
+            + NEW_JAVADOD_LINE
+            + &quot;* The intellectual and technical concepts contained herein are proprietary to the owner&quot;
+            + NEW_LINE
+            + &quot;* Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process,&quot;
+            + NEW_LINE
+            + &quot;* and are protected by trade secret or copyRight law. Dissemination of this information or&quot;
+            + NEW_LINE
+            + &quot;* reproduction of this material is strictly forbidden unless prior written permission is&quot;
+            + NEW_LINE
+            + &quot;* obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby&quot;
+            + NEW_LINE
+            + &quot;* forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements &quot;
+            + NEW_LINE
+            + &quot;* explicitly covering such access.&quot;
+            + NEW_LINE
+            + &quot;*+NEW_LINE+NEW_LINE&quot;
+            + &quot;+The copyRight notice above does not evidence any actual or intended publication &quot;
+            + NEW_LINE
+            + &quot;* or disclosure  of  this source code, which includes information that is confidential &quot;
+            + NEW_LINE
+            + &quot;* and/or proprietary, and is a trade secret, of Konstantinos Margaritis. ANY REPRODUCTION, &quot;
+            + NEW_LINE
+            + &quot;* MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF &quot;
+            + NEW_LINE
+            + &quot;* THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF COMPANY IS STRICTLY PROHIBITED, &quot;
+            + NEW_LINE
+            + &quot;* AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF +NEW_LINE&quot;
+            + &quot;* THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  &quot; + NEW_LINE
+            + &quot;* TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL &quot; + NEW_LINE
+            + &quot;* ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.&quot; + NEW_LINE + NEW_JAVADOD_LINE + JAVADOC_END
+            + NEW_LINE;
+    
+    /**
+     * Instantiates a new sxm creator.
+     * 
+     * @param jsxmList
+     *            the jsxm list
+     * @param rootFolders
+     *            the root folders
+     * @param javaFileFolders
+     *            the java file folders
+     */
+<span class="fc" id="L152">    protected SxmSampleCreator(List&lt;String&gt; jsxmList, List&lt;String&gt; rootFolders, List&lt;File&gt; javaFileFolders) {</span>
+<span class="fc" id="L153">        this.jsxmList = jsxmList;</span>
+<span class="fc" id="L154">        this.rootFolders = rootFolders;</span>
+<span class="fc" id="L155">        this.javaFileFolders = javaFileFolders;</span>
+<span class="fc" id="L156">    }</span>
+    
+    /**
+     * Creates the adapter.
+     * 
+     * @param i
+     */
+    public void createAdapter(int i) {
+<span class="fc" id="L164">        String className = getJsxmName(i);</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (!new File(rootFolders.get(i) + fileSeparator + &quot;testAdapters&quot; + fileSeparator + className + &quot;Adapter.java&quot;)</span>
+                .exists()) {
+<span class="fc" id="L167">            String importPackage = createPackage(i);</span>
+<span class="fc" id="L168">            String javaPackage = &quot;jsxm.testAdapters&quot;;</span>
+<span class="fc" id="L169">            write(&quot;package &quot; + javaPackage + &quot;;&quot; + NEW_LINE + NEW_LINE + &quot;import &quot; + importPackage + &quot;.&quot; + className</span>
+                    + &quot;;&quot; + NEW_LINE + &quot;&quot; + JAVADOC_START + NEW_LINE + &quot; *&quot; + NEW_LINE
+                    + &quot; * @author Konstantinos Margaritis&quot; + NEW_LINE + &quot; *&quot; + NEW_LINE + &quot; &quot; + JAVADOC_END + NEW_LINE
+                    + &quot;public class &quot; + className + &quot;Adapter&quot; + &quot;{&quot; + NEW_LINE + NEW_LINE + &quot;	&quot; + JAVADOC_START
+                    + NEW_LINE + &quot;	 * New automaton for testing&quot; + NEW_LINE + &quot;	 &quot; + JAVADOC_END + NEW_LINE + &quot;	&quot;
+                    + className + &quot; object=new &quot; + className + &quot;()&quot; + &quot;;&quot; + NEW_LINE + NEW_LINE + &quot;	&quot; + JAVADOC_START
+                    + NEW_LINE + &quot;	 * Starting the automaton&quot; + NEW_LINE + &quot;	 * @return&quot; + NEW_LINE + &quot;	 &quot;
+                    + JAVADOC_END + NEW_LINE + &quot;	public String startAutomaton(){ &quot; + NEW_LINE + &quot;		try { &quot; + NEW_LINE
+                    + &quot;			object.startAutomaton();&quot; + NEW_LINE + &quot;		} catch (Exception e) {&quot; + NEW_LINE
+                    + &quot;			return \&quot;startAutomaton_Error\&quot;;&quot; + NEW_LINE + &quot;		}&quot; + NEW_LINE + &quot;		return \&quot;startOut\&quot;;&quot;
+                    + &quot;	}&quot; + NEW_LINE + NEW_LINE + &quot;	&quot; + JAVADOC_START + NEW_LINE + &quot;	 * Stopping the automaton&quot;
+                    + NEW_LINE + &quot;	 * @return&quot; + NEW_LINE + &quot;	 &quot; + JAVADOC_END + NEW_LINE
+                    + &quot;	public String stopAutomaton(){ &quot; + NEW_LINE + &quot;		try {&quot; + NEW_LINE
+                    + &quot;			object.stopAutomaton();&quot; + NEW_LINE + &quot;		} catch (Exception e) {&quot; + NEW_LINE
+                    + &quot;			return \&quot;stopAutomaton_Error\&quot;;&quot; + NEW_LINE + &quot;		}&quot; + NEW_LINE + &quot;		return \&quot;stopOut\&quot;;&quot;
+                    + NEW_LINE + &quot;	}&quot; + NEW_LINE + &quot;	&quot; + JAVADOC_START + NEW_LINE + &quot;	 * Reseting the automaton&quot;
+                    + NEW_LINE + &quot;	 * @return&quot; + NEW_LINE + &quot;	 &quot; + JAVADOC_END + NEW_LINE
+                    + &quot;	public String resetAutomaton(){&quot; + NEW_LINE + &quot;		try {&quot; + NEW_LINE
+                    + &quot;			object.resetAutomaton();&quot; + NEW_LINE + &quot;		} catch (Exception e) {&quot; + NEW_LINE
+                    + &quot;			return \&quot;resetAutomaton_Error\&quot;;&quot; + NEW_LINE + &quot;		}&quot; + NEW_LINE + &quot;		return \&quot;resetOut\&quot;;&quot;
+                    + NEW_LINE + &quot;	}&quot; + NEW_LINE + &quot;}&quot; + NEW_LINE, javaAdapterContents);
+            
+<span class="fc" id="L191">            logger.debug(&quot;\n&quot; + javaAdapterContents);</span>
+<span class="fc" id="L192">            logger.debug(rootFolders.get(i) + fileSeparator + &quot;testAdapters&quot; + fileSeparator + className</span>
+                    + &quot;Adapter.java&quot;);
+<span class="fc" id="L194">            javaAdapter = rootFolders.get(i) + fileSeparator + &quot;testAdapters&quot; + fileSeparator + className</span>
+                    + &quot;Adapter.java&quot;;
+<span class="fc" id="L196">            Various.writeToFileOptions(javaAdapter, javaAdapterContents.toString(), true, false);</span>
+<span class="fc" id="L197">            javaAdapterContents = new StringBuilder();</span>
+        }
+<span class="fc" id="L199">    }</span>
+    
+    /**
+     * Creates the characterization.
+     * 
+     * @return the element
+     */
+    private Element createCharacterization() {
+<span class="fc" id="L207">        Element characterizationElement = new Element(&quot;characterization&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L208">        characterizationElement.addContent(createSequenceChild(START_AUTOMATON));</span>
+<span class="fc" id="L209">        characterizationElement.addContent(createSequenceChild(START_ERROR));</span>
+<span class="fc" id="L210">        characterizationElement.addContent(createSequenceChild(STOP_AUTOMATON));</span>
+<span class="fc" id="L211">        characterizationElement.addContent(createSequenceChild(STOP_ERROR));</span>
+<span class="fc" id="L212">        characterizationElement.addContent(createSequenceChild(RESET_AUTOMATON));</span>
+<span class="fc" id="L213">        characterizationElement.addContent(createSequenceChild(RESET_ERROR));</span>
+<span class="fc" id="L214">        return characterizationElement;</span>
+    }
+    
+    /**
+     * Creates the empty sequence.
+     * 
+     * @return the element
+     */
+    private Element createEmptySequence() {
+<span class="fc" id="L223">        return new Element(SEQUENCE_ELEMENT, Various.getInstance().getNameSpace());</span>
+    }
+    
+    /**
+     * Creates the fault.
+     * 
+     * @param name
+     *            the name
+     * @return the element
+     */
+    private Element createFault(String name) {
+<span class="fc" id="L234">        Element faultChild = new Element(&quot;fault&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L235">        faultChild.setAttribute(NAME_ATRRIBUTE, name);</span>
+<span class="fc" id="L236">        return faultChild;</span>
+    }
+    
+    /**
+     * Creates the fault function.
+     * 
+     * @param name
+     *            the name
+     * @param input
+     *            the input
+     * @param fault
+     *            the fault
+     * @param ns
+     *            the ns
+     * @return the element
+     */
+    private Element createFaultFunction(String name, String input, String fault, Namespace ns) {
+<span class="fc" id="L253">        Element functionChild = new Element(FUNCTION_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L254">        functionChild.setAttribute(NAME_ATRRIBUTE, name);</span>
+<span class="fc" id="L255">        functionChild.setAttribute(&quot;input&quot;, input);</span>
+<span class="fc" id="L256">        functionChild.setAttribute(&quot;fault&quot;, fault);</span>
+<span class="fc" id="L257">        functionChild.setAttribute(&quot;type&quot;, &quot;FaultFunction&quot;, ns);</span>
+<span class="fc" id="L258">        return functionChild;</span>
+    }
+    
+    /**
+     * Creates the faults.
+     * 
+     * @return the element
+     */
+    private Element createFaults() {
+<span class="fc" id="L267">        Element faultsElement = new Element(&quot;faults&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L268">        faultsElement.addContent(createFault(START_FAULT));</span>
+<span class="fc" id="L269">        faultsElement.addContent(createFault(STOP_FAULT));</span>
+<span class="fc" id="L270">        faultsElement.addContent(createFault(RESET_FAULT));</span>
+<span class="fc" id="L271">        return faultsElement;</span>
+    }
+    
+    /**
+     * Creates the functions.
+     * 
+     * @param ns
+     *            the ns
+     * @return the element
+     */
+    private Element createFunctions(Namespace ns) {
+<span class="fc" id="L282">        Element functionsElement = new Element(&quot;functions&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L283">        functionsElement.addContent(createOutputFunction(START_AUTOMATON, START_AUTOMATON, START_OUTPUT, ns));</span>
+<span class="fc" id="L284">        functionsElement.addContent(createOutputFunction(STOP_AUTOMATON, STOP_AUTOMATON, STOP_OUTPUT, ns));</span>
+<span class="fc" id="L285">        functionsElement.addContent(createOutputFunction(RESET_AUTOMATON, RESET_AUTOMATON, RESET_OUTPUT, ns));</span>
+<span class="fc" id="L286">        functionsElement.addContent(createFaultFunction(START_ERROR, START_AUTOMATON, START_FAULT, ns));</span>
+<span class="fc" id="L287">        functionsElement.addContent(createFaultFunction(STOP_ERROR, STOP_AUTOMATON, STOP_FAULT, ns));</span>
+<span class="fc" id="L288">        functionsElement.addContent(createFaultFunction(RESET_ERROR, RESET_AUTOMATON, RESET_FAULT, ns));</span>
+<span class="fc" id="L289">        return functionsElement;</span>
+    }
+    
+    /**
+     * Creates the implementation.
+     * 
+     * @param the
+     *            current index of the list provided.
+     */
+    public void createImplementation(int i) {
+<span class="fc" id="L299">        String className = getJsxmName(i);</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">        if (!new File(javaFileFolders.get(i) + fileSeparator + className + &quot;.java&quot;).exists()) {</span>
+<span class="fc" id="L301">            String javaPackage = createPackage(i);</span>
+<span class="fc" id="L302">            write(&quot;package &quot; + javaPackage + &quot;;&quot; + NEW_LINE + NEW_LINE + &quot;&quot; + JAVADOC_START + NEW_LINE + &quot; *&quot;</span>
+                    + NEW_LINE + &quot; * @author Konstantinos Margaritis&quot; + NEW_LINE + &quot; *&quot; + NEW_LINE + &quot; &quot; + JAVADOC_END
+                    + NEW_LINE + &quot;public class &quot; + className + &quot;{&quot; + NEW_LINE + NEW_LINE + &quot;	&quot; + JAVADOC_START
+                    + NEW_LINE + &quot;	 * Variable for declaring whether the automaton has already started&quot; + NEW_LINE
+                    + &quot;	 &quot; + JAVADOC_END + NEW_LINE + &quot;	private boolean isStarted=false;&quot; + NEW_LINE + NEW_LINE + &quot;	&quot;
+                    + JAVADOC_START + NEW_LINE + &quot; 	 * Variable for declaring whether the automaton has been stopped&quot;
+                    + NEW_LINE + &quot;	 &quot; + JAVADOC_END + NEW_LINE + &quot;	private boolean isStopped=false;&quot; + NEW_LINE
+                    + NEW_LINE + &quot;	&quot; + JAVADOC_START + NEW_LINE + &quot;	 * Starting the automaton&quot; + NEW_LINE + &quot;	 &quot;
+                    + JAVADOC_END + NEW_LINE + &quot;	public void startAutomaton(){ &quot; + NEW_LINE
+                    + &quot;		if (!isStarted &amp;&amp; !isStopped) {&quot; + NEW_LINE + &quot;			isStarted=true;&quot; + NEW_LINE
+                    + &quot;			isStopped=false;&quot; + NEW_LINE + &quot;		}else{&quot; + NEW_LINE + &quot;			throw new RuntimeException();&quot;
+                    + NEW_LINE + &quot;		}&quot; + NEW_LINE + &quot;	}&quot; + NEW_LINE + NEW_LINE + &quot;	&quot; + JAVADOC_START + NEW_LINE
+                    + &quot;	 * Stopping the automaton&quot; + NEW_LINE + &quot;	 &quot; + JAVADOC_END + NEW_LINE
+                    + &quot;	public void stopAutomaton(){ &quot; + NEW_LINE + &quot;		if(isStarted){&quot; + NEW_LINE
+                    + &quot;			isStarted = false;&quot; + NEW_LINE + &quot;			isStopped=true;&quot; + NEW_LINE + &quot;		}else{&quot; + NEW_LINE
+                    + &quot;			throw new RuntimeException();&quot; + NEW_LINE + &quot;		}&quot; + NEW_LINE + &quot;	}&quot; + NEW_LINE + NEW_LINE
+                    + &quot;	&quot; + JAVADOC_START + NEW_LINE + &quot;	 * Resetting the automaton&quot; + NEW_LINE + &quot;	 &quot; + JAVADOC_END
+                    + NEW_LINE + &quot;	public void resetAutomaton(){ &quot; + NEW_LINE + &quot;		if(isStarted){&quot; + NEW_LINE
+                    + &quot;			isStarted=false;&quot; + NEW_LINE + &quot;		}else if (isStopped){&quot; + NEW_LINE + &quot;			isStopped=false;&quot;
+                    + NEW_LINE + &quot;		}else{&quot; + NEW_LINE + &quot;			throw new RuntimeException();&quot; + NEW_LINE + &quot;		}&quot;
+                    + NEW_LINE + &quot;	}&quot; + NEW_LINE + &quot;}&quot; + NEW_LINE, javaImplementationContents);
+            
+<span class="fc" id="L324">            logger.debug(javaImplementationContents + &quot;&quot;);</span>
+<span class="fc" id="L325">            logger.debug(javaFileFolders.get(i) + fileSeparator + className + &quot;.java&quot;);</span>
+<span class="fc" id="L326">            javaImplementation = javaFileFolders.get(i) + fileSeparator + className + &quot;.java&quot;;</span>
+<span class="fc" id="L327">            Various.writeToFileOptions(javaImplementation, javaImplementationContents.toString(), true, false);</span>
+<span class="fc" id="L328">            javaImplementationContents = new StringBuilder();</span>
+        }
+<span class="fc" id="L330">    }</span>
+    
+    /**
+     * Creates the initial state.
+     * 
+     * @param attribute
+     *            the attribute
+     * @return the element
+     */
+    private Element createInitialState(String attribute) {
+<span class="fc" id="L340">        Element initialStateElement = new Element(&quot;initialState&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L341">        initialStateElement.setAttribute(&quot;state&quot;, attribute);</span>
+<span class="fc" id="L342">        return initialStateElement;</span>
+    }
+    
+    /**
+     * Creates the input.
+     * 
+     * @param name
+     *            the name
+     * @return the element
+     */
+    private Element createInput(String name) {
+<span class="fc" id="L353">        Element inputChild = new Element(&quot;input&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L354">        inputChild.setAttribute(NAME_ATRRIBUTE, name);</span>
+<span class="fc" id="L355">        return inputChild;</span>
+    }
+    
+    /**
+     * Creates the inputs.
+     * 
+     * @return the element
+     */
+    private Element createInputs() {
+<span class="fc" id="L364">        Element inputsElement = new Element(&quot;inputs&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L365">        inputsElement.addContent(createInput(START_AUTOMATON));</span>
+<span class="fc" id="L366">        inputsElement.addContent(createInput(STOP_AUTOMATON));</span>
+<span class="fc" id="L367">        inputsElement.addContent(createInput(RESET_AUTOMATON));</span>
+<span class="fc" id="L368">        return inputsElement;</span>
+    }
+    
+    /**
+     * Creates the memory.
+     * 
+     * @return the element
+     */
+    private Element createMemory() {
+<span class="fc" id="L377">        Element memoryElement = new Element(&quot;memory&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L378">        Element declarationChild = new Element(&quot;declaration&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L379">        memoryElement.addContent(declarationChild);</span>
+<span class="fc" id="L380">        Element initialChild = new Element(&quot;initial&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L381">        memoryElement.addContent(initialChild);</span>
+<span class="fc" id="L382">        Element displayChild = new Element(&quot;display&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L383">        memoryElement.addContent(displayChild);</span>
+<span class="fc" id="L384">        return memoryElement;</span>
+    }
+    
+    /**
+     * Creates the output.
+     * 
+     * @param name
+     *            the name
+     * @return the element
+     */
+    private Element createOutput(String name) {
+<span class="fc" id="L395">        Element outputChild = new Element(&quot;output&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L396">        outputChild.setAttribute(NAME_ATRRIBUTE, name);</span>
+<span class="fc" id="L397">        return outputChild;</span>
+    }
+    
+    /**
+     * Creates the output function.
+     * 
+     * @param name
+     *            the name
+     * @param input
+     *            the input
+     * @param output
+     *            the output
+     * @param ns
+     *            the ns
+     * @return the element
+     */
+    private Element createOutputFunction(String name, String input, String output, Namespace ns) {
+<span class="fc" id="L414">        Element functionChild = new Element(FUNCTION_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L415">        functionChild.setAttribute(NAME_ATRRIBUTE, name);</span>
+<span class="fc" id="L416">        functionChild.setAttribute(&quot;input&quot;, input);</span>
+<span class="fc" id="L417">        functionChild.setAttribute(&quot;output&quot;, output);</span>
+<span class="fc" id="L418">        functionChild.setAttribute(&quot;type&quot;, &quot;OutputFunction&quot;, ns);</span>
+<span class="fc" id="L419">        return functionChild;</span>
+    }
+    
+    /**
+     * Creates the outputs.
+     * 
+     * @return the element
+     */
+    private Element createOutputs() {
+<span class="fc" id="L428">        Element outputsElement = new Element(&quot;outputs&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L429">        outputsElement.addContent(createOutput(START_OUTPUT));</span>
+<span class="fc" id="L430">        outputsElement.addContent(createOutput(STOP_OUTPUT));</span>
+<span class="fc" id="L431">        outputsElement.addContent(createOutput(RESET_OUTPUT));</span>
+<span class="fc" id="L432">        return outputsElement;</span>
+    }
+    
+    /**
+     * Creates the package.
+     * 
+     * @param i
+     *            the i
+     * @return the string
+     */
+    private String createPackage(int i) {
+<span class="fc" id="L443">        String jPackage = &quot;&quot;;</span>
+<span class="pc bpc" id="L444" title="1 of 2 branches missed.">        if (fileSeparator.equals(&quot;/&quot;)) {</span>
+<span class="fc" id="L445">            jPackage = jsxmList.get(i).replace(jsxmList.get(i).substring(jsxmList.get(i).lastIndexOf('/') + 1), &quot;&quot;);</span>
+<span class="fc" id="L446">            logger.debug(&quot;Package in Unix system:&quot; + jPackage);</span>
+        } else {
+<span class="nc" id="L448">            jPackage = jsxmList.get(i).replace(jsxmList.get(i).substring(jsxmList.get(i).lastIndexOf('\\') + 1), &quot;&quot;);</span>
+<span class="nc" id="L449">            logger.debug(&quot;Package in windows system :&quot; + jPackage);</span>
+        }
+<span class="pc bpc" id="L451" title="1 of 2 branches missed.">        if (jPackage.contains(fileSeparator)) {</span>
+<span class="fc" id="L452">            jPackage = JSXMUtils.replaceSlashWithDot(jPackage);</span>
+<span class="fc" id="L453">            logger.debug(&quot;Package without replaced characters&quot; + jPackage);</span>
+<span class="pc bpc" id="L454" title="1 of 2 branches missed.">            if (jPackage.endsWith(&quot;.&quot;)) {</span>
+<span class="fc" id="L455">                jPackage = jPackage.substring(0, jPackage.length() - 1);</span>
+            }
+<span class="fc" id="L457">            logger.debug(&quot;Package with replaced characters:&quot; + jPackage);</span>
+        }
+<span class="fc" id="L459">        return jPackage;</span>
+    }
+    
+    /**
+     * Creates the sequence child.
+     * 
+     * @param functionName
+     *            the function name
+     * @return the element
+     */
+    private Element createSequenceChild(String functionName) {
+<span class="fc" id="L470">        Element sequenceChild = new Element(SEQUENCE_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L471">        Element functionChild = new Element(FUNCTION_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L472">        functionChild.setAttribute(NAME_ATRRIBUTE, functionName);</span>
+<span class="fc" id="L473">        sequenceChild.addContent(functionChild);</span>
+<span class="fc" id="L474">        return sequenceChild;</span>
+    }
+    
+    /**
+     * Creates the sets template.
+     * 
+     * @param the
+     *            current index of the list provided.
+     */
+    public void createSetsTemplate(int i) {
+<span class="fc" id="L484">        String jsxmName = getJsxmName(i);</span>
+<span class="fc" id="L485">        logger.debug(jsxmName);</span>
+<span class="pc bpc" id="L486" title="1 of 2 branches missed.">        if (!new File(rootFolders.get(i) + fileSeparator + SPECIFICATION_DIRECTORY + fileSeparator + jsxmName</span>
+                + &quot;_sets.xml&quot;).exists()) {
+            
+<span class="fc" id="L489">            XMLOutputter xmlOutput = new XMLOutputter();</span>
+<span class="fc" id="L490">            Document doc = new Document();</span>
+<span class="fc" id="L491">            Element setsElement = new Element(&quot;sets&quot;, Various.getInstance().getNameSpace());</span>
+            
+<span class="fc" id="L493">            Namespace ns = Namespace.getNamespace(&quot;xsi&quot;, &quot;http://www.w3.org/2001/XMLSchema-instance&quot;);</span>
+<span class="fc" id="L494">            setsElement.addNamespaceDeclaration(ns);</span>
+<span class="fc" id="L495">            setsElement.setAttribute(new Attribute(&quot;schemaLocation&quot;,</span>
+                    &quot;http://www.jsxm.org/schema http://www.jsxm.org/schema/sets.xsd&quot;, ns));
+            
+            /*
+             * Characterization element
+             */
+<span class="fc" id="L501">            setsElement.addContent(new Comment(&quot;Characterization definition&quot;));</span>
+<span class="fc" id="L502">            setsElement.addContent(createCharacterization());</span>
+            /*
+             * StateCover element
+             */
+<span class="fc" id="L506">            setsElement.addContent(new Comment(&quot;StateCover definition&quot;));</span>
+<span class="fc" id="L507">            setsElement.addContent(createStateCover());</span>
+            /*
+             * Adding root element
+             */
+<span class="fc" id="L511">            doc.addContent(setsElement);</span>
+<span class="fc" id="L512">            xmlOutput.setFormat(Format.getPrettyFormat());</span>
+<span class="fc" id="L513">            logger.debug(rootFolders.get(i) + fileSeparator + SPECIFICATION_DIRECTORY + fileSeparator + jsxmName</span>
+                    + &quot;_sets.xml&quot;);
+<span class="fc" id="L515">            logger.info(&quot;Sets file &quot; + jsxmName + &quot;_sets.xml created.\n&quot;);</span>
+<span class="fc" id="L516">            String fileToWrite = rootFolders.get(i) + fileSeparator + SPECIFICATION_DIRECTORY + fileSeparator</span>
+                    + jsxmName + &quot;_sets.xml&quot;;
+<span class="fc" id="L518">            SxmFileUtils.writeXMLToFile(xmlOutput, doc, fileToWrite);</span>
+        }
+<span class="fc" id="L520">    }</span>
+    
+    /**
+     * Creates the specification template.
+     * 
+     * @param i
+     *            the current index of the list provided.
+     */
+    public void createSpecificationTemplate(int i) {
+<span class="fc" id="L529">        String jsxmName = getJsxmName(i);</span>
+<span class="fc" id="L530">        logger.debug(jsxmName);</span>
+<span class="pc bpc" id="L531" title="1 of 2 branches missed.">        if (!new File(rootFolders.get(i) + fileSeparator + SPECIFICATION_DIRECTORY + fileSeparator + jsxmName + &quot;.xml&quot;)</span>
+                .exists()) {
+            
+<span class="fc" id="L534">            XMLOutputter xmlOutput = new XMLOutputter();</span>
+<span class="fc" id="L535">            Document doc = new Document();</span>
+<span class="fc" id="L536">            Element sxmElement = new Element(&quot;SXM&quot;, Various.getInstance().getNameSpace());</span>
+            
+<span class="fc" id="L538">            sxmElement.setAttribute(NAME_ATRRIBUTE, jsxmName);</span>
+<span class="fc" id="L539">            Namespace ns = Namespace.getNamespace(&quot;xsi&quot;, &quot;http://www.w3.org/2001/XMLSchema-instance&quot;);</span>
+<span class="fc" id="L540">            sxmElement.addNamespaceDeclaration(ns);</span>
+<span class="fc" id="L541">            sxmElement.setAttribute(new Attribute(&quot;schemaLocation&quot;,</span>
+                    &quot;http://www.jsxm.org/schema http://www.jsxm.org/schema/specification.xsd&quot;, ns));
+            
+            /*
+             * States element
+             */
+<span class="fc" id="L547">            sxmElement.addContent(new Comment(&quot;States definition&quot;));</span>
+            
+<span class="fc" id="L549">            List&lt;String&gt; states = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L550">            states.add(INITIAL);</span>
+<span class="fc" id="L551">            states.add(MIDDLE);</span>
+<span class="fc" id="L552">            states.add(TERMINAL);</span>
+            
+<span class="fc" id="L554">            sxmElement.addContent(createStates(states));</span>
+            
+            /*
+             * Initial State element
+             */
+<span class="fc" id="L559">            sxmElement.addContent(new Comment(&quot;Initial State definition&quot;));</span>
+<span class="fc" id="L560">            sxmElement.addContent(createInitialState(INITIAL));</span>
+            
+            /*
+             * Transitions element
+             */
+<span class="fc" id="L565">            sxmElement.addContent(new Comment(&quot;Transitions definition&quot;));</span>
+<span class="fc" id="L566">            sxmElement.addContent(createTransitions());</span>
+            
+            /*
+             * Memory element
+             */
+<span class="fc" id="L571">            sxmElement.addContent(new Comment(&quot;Memory definition&quot;));</span>
+<span class="fc" id="L572">            sxmElement.addContent(createMemory());</span>
+            
+            /*
+             * Inputs element
+             */
+<span class="fc" id="L577">            sxmElement.addContent(new Comment(&quot;Inputs definition&quot;));</span>
+<span class="fc" id="L578">            sxmElement.addContent(createInputs());</span>
+            
+            /*
+             * Outputs element
+             */
+<span class="fc" id="L583">            sxmElement.addContent(new Comment(&quot;Outputs definition&quot;));</span>
+<span class="fc" id="L584">            sxmElement.addContent(createOutputs());</span>
+            
+            /*
+             * Faults element
+             */
+<span class="fc" id="L589">            sxmElement.addContent(new Comment(&quot;Faults definition&quot;));</span>
+<span class="fc" id="L590">            sxmElement.addContent(createFaults());</span>
+            
+            /*
+             * JSXMUtilities element
+             */
+<span class="fc" id="L595">            sxmElement.addContent(new Comment(&quot;JSXMUtilities definition&quot;));</span>
+<span class="fc" id="L596">            sxmElement.addContent(createFunctions(ns));</span>
+            
+            /*
+             * Adding root element
+             */
+<span class="fc" id="L601">            doc.addContent(sxmElement);</span>
+            
+<span class="fc" id="L603">            xmlOutput.setFormat(Format.getPrettyFormat());</span>
+<span class="fc" id="L604">            logger.debug(rootFolders.get(i) + fileSeparator + SPECIFICATION_DIRECTORY + fileSeparator + jsxmName</span>
+                    + &quot;.xml&quot;);
+<span class="fc" id="L606">            logger.info(&quot;Specification file &quot; + jsxmName + &quot;.xml created.&quot;);</span>
+<span class="fc" id="L607">            String fileToWrite = rootFolders.get(i) + fileSeparator + SPECIFICATION_DIRECTORY + fileSeparator</span>
+                    + jsxmName + &quot;.xml&quot;;
+<span class="fc" id="L609">            SxmFileUtils.writeXMLToFile(xmlOutput, doc, fileToWrite);</span>
+        }
+<span class="fc" id="L611">    }</span>
+    
+    /**
+     * Creates the state.
+     * 
+     * @param attribute
+     *            the attribute
+     * @return the element
+     */
+    private Element createState(String attribute) {
+<span class="fc" id="L621">        Element stateChild = new Element(&quot;state&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L622">        stateChild.setAttribute(NAME_ATRRIBUTE, attribute);</span>
+<span class="fc" id="L623">        return stateChild;</span>
+    }
+    
+    /**
+     * Creates the state cover.
+     * 
+     * @return the element
+     */
+    private Element createStateCover() {
+<span class="fc" id="L632">        Element stateCoverElement = new Element(&quot;statecover&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L633">        stateCoverElement.addContent(createEmptySequence());</span>
+<span class="fc" id="L634">        Element sequenceStateCoverChild1 = new Element(SEQUENCE_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L635">        sequenceStateCoverChild1.addContent(createStateCoverFunction(START_AUTOMATON));</span>
+        
+<span class="fc" id="L637">        Element sequenceStateCoverChild2 = new Element(SEQUENCE_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L638">        sequenceStateCoverChild2.addContent(createStateCoverFunction(START_AUTOMATON));</span>
+<span class="fc" id="L639">        sequenceStateCoverChild2.addContent(createStateCoverFunction(STOP_AUTOMATON));</span>
+        
+<span class="fc" id="L641">        Element sequenceStateCoverChild3 = new Element(SEQUENCE_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L642">        sequenceStateCoverChild3.addContent(createStateCoverFunction(START_AUTOMATON));</span>
+<span class="fc" id="L643">        sequenceStateCoverChild3.addContent(createStateCoverFunction(STOP_AUTOMATON));</span>
+<span class="fc" id="L644">        sequenceStateCoverChild3.addContent(createStateCoverFunction(RESET_AUTOMATON));</span>
+        
+<span class="fc" id="L646">        stateCoverElement.addContent(sequenceStateCoverChild1);</span>
+<span class="fc" id="L647">        stateCoverElement.addContent(sequenceStateCoverChild2);</span>
+<span class="fc" id="L648">        stateCoverElement.addContent(sequenceStateCoverChild3);</span>
+<span class="fc" id="L649">        return stateCoverElement;</span>
+    }
+    
+    /**
+     * Creates the state cover function.
+     * 
+     * @param name
+     *            the name
+     * @return the element
+     */
+    private Element createStateCoverFunction(String name) {
+<span class="fc" id="L660">        Element stateCoverFunction = new Element(FUNCTION_ELEMENT, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L661">        stateCoverFunction.setAttribute(NAME_ATRRIBUTE, name);</span>
+<span class="fc" id="L662">        return stateCoverFunction;</span>
+    }
+    
+    /**
+     * Creates the states.
+     * 
+     * @return the element
+     */
+    private Element createStates(List&lt;String&gt; states) {
+<span class="fc" id="L671">        Element statesElement = new Element(&quot;states&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc bfc" id="L672" title="All 2 branches covered.">        for (int i = 0; i &lt; states.size(); i++) {</span>
+<span class="fc" id="L673">            statesElement.addContent(createState(states.get(i)));</span>
+        }
+<span class="fc" id="L675">        return statesElement;</span>
+    }
+    
+    /**
+     * Creates the transition.
+     * 
+     * @param from
+     *            the from
+     * @param function
+     *            the function
+     * @param to
+     *            the to
+     * @return the element
+     */
+    private Element createTransition(String from, String function, String to) {
+<span class="fc" id="L690">        Element transitionChild = new Element(&quot;transition&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L691">        transitionChild.setAttribute(&quot;from&quot;, from);</span>
+<span class="fc" id="L692">        transitionChild.setAttribute(&quot;function&quot;, function);</span>
+<span class="fc" id="L693">        transitionChild.setAttribute(&quot;to&quot;, to);</span>
+<span class="fc" id="L694">        return transitionChild;</span>
+    }
+    
+    /**
+     * Creates the transitions.
+     * 
+     * @return the element
+     */
+    private Element createTransitions() {
+<span class="fc" id="L703">        Element transitionsElement = new Element(&quot;transitions&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L704">        transitionsElement.addContent(createTransition(INITIAL, START_AUTOMATON, MIDDLE));</span>
+<span class="fc" id="L705">        transitionsElement.addContent(createTransition(MIDDLE, STOP_AUTOMATON, TERMINAL));</span>
+<span class="fc" id="L706">        transitionsElement.addContent(createTransition(TERMINAL, RESET_AUTOMATON, INITIAL));</span>
+<span class="fc" id="L707">        transitionsElement.addContent(createTransition(MIDDLE, RESET_AUTOMATON, INITIAL));</span>
+<span class="fc" id="L708">        transitionsElement.addContent(createTransition(TERMINAL, START_ERROR, TERMINAL));</span>
+<span class="fc" id="L709">        transitionsElement.addContent(createTransition(MIDDLE, START_ERROR, MIDDLE));</span>
+<span class="fc" id="L710">        transitionsElement.addContent(createTransition(INITIAL, STOP_ERROR, INITIAL));</span>
+<span class="fc" id="L711">        transitionsElement.addContent(createTransition(TERMINAL, STOP_ERROR, TERMINAL));</span>
+<span class="fc" id="L712">        transitionsElement.addContent(createTransition(INITIAL, RESET_ERROR, INITIAL));</span>
+        
+<span class="fc" id="L714">        return transitionsElement;</span>
+    }
+    
+    public String getCopyright() {
+<span class="nc" id="L718">        return copyRight;</span>
+    }
+    
+    public List&lt;File&gt; getJavaFileFolders() {
+<span class="nc" id="L722">        return javaFileFolders;</span>
+    }
+    
+    public List&lt;String&gt; getJsxmList() {
+<span class="nc" id="L726">        return jsxmList;</span>
+    }
+    
+    /**
+     * Gets the jsxm name.
+     * 
+     * @param i
+     *            the i
+     * @return the jsxm name
+     */
+    private String getJsxmName(int i) {
+<span class="fc" id="L737">        String jsxmName = &quot;&quot;;</span>
+<span class="pc bpc" id="L738" title="1 of 2 branches missed.">        if (fileSeparator.equals(&quot;/&quot;)) {</span>
+<span class="fc" id="L739">            jsxmName = jsxmList.get(i).substring(jsxmList.get(i).lastIndexOf('/') + 1);</span>
+        } else {
+<span class="nc" id="L741">            jsxmName = jsxmList.get(i).substring(jsxmList.get(i).lastIndexOf('\\') + 1);</span>
+        }
+<span class="fc" id="L743">        return jsxmName;</span>
+    }
+    
+    public List&lt;String&gt; getRootFolders() {
+<span class="nc" id="L747">        return rootFolders;</span>
+    }
+    
+    public void setCopyright(String copyright) {
+<span class="nc" id="L751">        this.copyRight = copyright;</span>
+<span class="nc" id="L752">    }</span>
+    
+    public void setJavaFileFolders(List&lt;File&gt; javaFileFolders) {
+<span class="nc" id="L755">        this.javaFileFolders = javaFileFolders;</span>
+<span class="nc" id="L756">    }</span>
+    
+    public void setJsxmList(List&lt;String&gt; jsxmList) {
+<span class="nc" id="L759">        this.jsxmList = jsxmList;</span>
+<span class="nc" id="L760">    }</span>
+    
+    public void setRootFolders(List&lt;String&gt; rootFolders) {
+<span class="nc" id="L763">        this.rootFolders = rootFolders;</span>
+<span class="nc" id="L764">    }</span>
+    
+    /**
+     * Write.
+     * 
+     * @param s
+     *            the s
+     * @param contents
+     *            the contents
+     */
+    private void write(String s, StringBuilder contents) {
+<span class="pc bpc" id="L775" title="1 of 2 branches missed.">        for (int i = 0; i &lt; indent; i++) {</span>
+<span class="nc" id="L776">            contents.append(&quot;    &quot;);</span>
+        }
+<span class="fc" id="L778">        contents.append(s);</span>
+<span class="fc" id="L779">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

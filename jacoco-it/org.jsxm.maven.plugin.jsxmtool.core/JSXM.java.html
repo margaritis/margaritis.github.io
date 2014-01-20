@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JSXM.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.core</a> &gt; <span class="el_source">JSXM.java</span></div><h1>JSXM.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access. 
+ * 
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.core;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.tools.Diagnostic;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public final class JSXM {
+       
+<span class="fc" id="L43">    private JSXM() {</span>
+<span class="fc" id="L44">    }</span>
+    
+    /**
+     * The Class LazyHolder.
+     */
+<span class="nc" id="L49">    private static class LazyHolder {</span>
+<span class="fc" id="L50">        private static final JSXM INSTANCE = new JSXM();</span>
+    }
+    
+    /**
+     * Gets the single instance of JSXMFacade.
+     * 
+     * @return single instance of JSXMFacade
+     */
+    public static JSXM getInstance() {
+<span class="fc" id="L59">        return LazyHolder.INSTANCE;</span>
+    }
+    
+<span class="fc" id="L62">    public static final int THREADS = Runtime.getRuntime().availableProcessors();</span>
+    public static final int SPECIFICATION_EXTENSION_LENGTH = 4;
+    public static final int JAVA_EXTENSION_LENGTH = 5;
+    public static final int GENERATION_DELAY = 10000;
+    public static final int TRANSFORMATION_DELAY = 10000;
+    public static final int EXTERNAL_PACKAGE_LIMIT = 80;
+    
+    
+    private long validationTime;
+    private long compilationTime;
+    private long generationTime;
+    private long transformationTime;
+<span class="fc" id="L74">    private List&lt;Specification&gt; specificationList = new LinkedList&lt;Specification&gt;();</span>
+<span class="fc" id="L75">    private List&lt;String&gt; missingInputs = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L76">    private boolean validate = false;</span>
+    private boolean compileRepast;
+    private String sxmImports;
+    private String sxmBaseImports;
+    private String sxmBaseInheritance;
+    private boolean pdfReport;
+    private String initialPath;
+    private String projectName;
+    
+    /**
+     * Jsxm core needs the jsxm core at runtime 
+     * in order to compile the XSD type adapters.
+     * This value is temporal and it will be removed
+     * when the compilation of the XSD type will be seperated
+     * from jsxmcore since the xsd types required 
+     * by JSXM are knwon to the system exactly after
+     * the validation.  
+     * Unless you know the exact differences 
+     * between versions it is advised to let the default value as is. 
+     */
+    public static final String JSXM_CORE_VERSION=&quot;1.1.6&quot;;
+    
+<span class="fc" id="L98">    private List&lt;Diagnostic&lt;?&gt;&gt; compilationDiagnostics=new LinkedList&lt;Diagnostic&lt;?&gt;&gt;();</span>
+    
+    /**
+     * Adds a specification.
+     * 
+     * @param p
+     *            the specification
+     */
+    public synchronized void addSpecification(Specification p) {
+<span class="fc" id="L107">        boolean exists = false;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (int i = 0; i &lt; specificationList.size(); i++) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            if (specificationList.get(i).getName().equals(p.getName())) {</span>
+<span class="fc" id="L110">                exists = true;</span>
+            }
+        }
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if (!exists) {</span>
+<span class="fc" id="L114">            specificationList.add(p);</span>
+        }
+<span class="fc" id="L116">    }</span>
+    
+    /**
+     * Gets the specification list.
+     *
+     * @return the specification list
+     */
+    public synchronized List&lt;Specification&gt; getSpecificationList() {
+<span class="fc" id="L124">        return specificationList;</span>
+    }
+    
+    /**
+     * Sets the specification list.
+     *
+     * @param specificationList the new specification list
+     */
+    public synchronized void setSpecificationList(List&lt;Specification&gt; specificationList) {
+<span class="nc" id="L133">        this.specificationList = specificationList;</span>
+<span class="nc" id="L134">    }</span>
+    
+    /**
+     * Checks if is validate.
+     *
+     * @return true, if is validate
+     */
+    public boolean isValidate() {
+<span class="fc" id="L142">        return validate;</span>
+    }
+    
+    /**
+     * Sets the validate.
+     *
+     * @param validate the new validate
+     */
+    public void setValidate(boolean validate) {
+<span class="fc" id="L151">        this.validate = validate;</span>
+<span class="fc" id="L152">    }</span>
+    
+    /**
+     * Checks if is compile repast.
+     *
+     * @return true, if is compile repast
+     */
+    public boolean isCompileRepast() {
+<span class="fc" id="L160">        return compileRepast;</span>
+    }
+    
+    /**
+     * Sets the compile repast.
+     *
+     * @param compileRepast the new compile repast
+     */
+    public void setCompileRepast(boolean compileRepast) {
+<span class="fc" id="L169">        this.compileRepast = compileRepast;</span>
+<span class="fc" id="L170">    }</span>
+    
+    /**
+     * Gets the sxm imports.
+     *
+     * @return the sxm imports
+     */
+    public String getSxmImports() {
+<span class="nc" id="L178">        return sxmImports;</span>
+    }
+    
+    /**
+     * Sets the sxm imports.
+     *
+     * @param sxmImports the new sxm imports
+     */
+    public void setSxmImports(String sxmImports) {
+<span class="fc" id="L187">        this.sxmImports = sxmImports;</span>
+<span class="fc" id="L188">    }</span>
+    
+    /**
+     * Gets the sxm base imports.
+     *
+     * @return the sxm base imports
+     */
+    public String getSxmBaseImports() {
+<span class="nc" id="L196">        return sxmBaseImports;</span>
+    }
+    
+    /**
+     * Sets the sxm base imports.
+     *
+     * @param sxmBaseImports the new sxm base imports
+     */
+    public void setSxmBaseImports(String sxmBaseImports) {
+<span class="fc" id="L205">        this.sxmBaseImports = sxmBaseImports;</span>
+<span class="fc" id="L206">    }</span>
+    
+    /**
+     * Gets the sxm base inheritance.
+     *
+     * @return the sxm base inheritance
+     */
+    public String getSxmBaseInheritance() {
+<span class="nc" id="L214">        return sxmBaseInheritance;</span>
+    }
+    
+    /**
+     * Sets the sxm base inheritance.
+     *
+     * @param sxmBaseInheritance the new sxm base inheritance
+     */
+    public void setSxmBaseInheritance(String sxmBaseInheritance) {
+<span class="fc" id="L223">        this.sxmBaseInheritance = sxmBaseInheritance;</span>
+<span class="fc" id="L224">    }</span>
+    
+    /**
+     * Gets the missing inputs.
+     *
+     * @return the missing inputs
+     */
+    public List&lt;String&gt; getMissingInputs() {
+<span class="fc" id="L232">        return missingInputs;</span>
+    }
+    
+    /**
+     * Sets the missing inputs.
+     *
+     * @param missingInputs the new missing inputs
+     */
+    public void setMissingInputs(List&lt;String&gt; missingInputs) {
+<span class="nc" id="L241">        this.missingInputs = missingInputs;</span>
+<span class="nc" id="L242">    }</span>
+    
+    /**
+     * Adds the missing input.
+     *
+     * @param missingInput the missing input
+     */
+    public synchronized void addMissingInput(String missingInput) {
+<span class="fc" id="L250">        this.missingInputs.add(missingInput);</span>
+<span class="fc" id="L251">    }</span>
+    
+    /**
+     * Checks if is pdf report.
+     *
+     * @return true, if is pdf report
+     */
+    public boolean isPdfReport() {
+<span class="fc" id="L259">        return pdfReport;</span>
+    }
+    
+    /**
+     * Sets the pdf report.
+     *
+     * @param pdfReport the new pdf report
+     */
+    public void setPdfReport(boolean pdfReport) {
+<span class="fc" id="L268">        this.pdfReport = pdfReport;</span>
+<span class="fc" id="L269">    }</span>
+        
+    /**
+     * Gets the initial path.
+     *
+     * @return the initial path
+     */
+    public String getInitialPath() {
+<span class="nc" id="L277">        return initialPath;</span>
+    }
+    
+    /**
+     * Sets the initial path.
+     *
+     * @param initialPath the new initial path
+     */
+    public void setInitialPath(String initialPath) {
+<span class="fc" id="L286">        this.initialPath = initialPath;</span>
+<span class="fc" id="L287">    }</span>
+    
+    /**
+     * Gets the project name.
+     *
+     * @return the project name
+     */
+    public String getProjectName() {
+<span class="fc" id="L295">        return projectName;</span>
+    }
+    
+    /**
+     * Sets the project name.
+     *
+     * @param projectName the new project name
+     */
+    public void setProjectName(String projectName) {
+<span class="fc" id="L304">        this.projectName = projectName;</span>
+<span class="fc" id="L305">    }</span>
+    
+    /**
+     * Gets the validation time.
+     *
+     * @return the validation time
+     */
+    public long getValidationTime() {
+<span class="nc" id="L313">        return validationTime;</span>
+    }
+
+    /**
+     * Sets the validation time.
+     *
+     * @param validationTime the new validation time
+     */
+    public void setValidationTime(long validationTime) {
+<span class="nc" id="L322">        this.validationTime = validationTime;</span>
+<span class="nc" id="L323">    }</span>
+
+    /**
+     * Gets the compilation time.
+     *
+     * @return the compilation time
+     */
+    public long getCompilationTime() {
+<span class="nc" id="L331">        return compilationTime;</span>
+    }
+
+    /**
+     * Sets the compilation time.
+     *
+     * @param compilationTime the new compilation time
+     */
+    public void setCompilationTime(long compilationTime) {
+<span class="nc" id="L340">        this.compilationTime = compilationTime;</span>
+<span class="nc" id="L341">    }</span>
+
+    /**
+     * Gets the generation time.
+     *
+     * @return the generation time
+     */
+    public long getGenerationTime() {
+<span class="nc" id="L349">        return generationTime;</span>
+    }
+
+    /**
+     * Sets the generation time.
+     *
+     * @param generationTime the new generation time
+     */
+    public void setGenerationTime(long generationTime) {
+<span class="nc" id="L358">        this.generationTime = generationTime;</span>
+<span class="nc" id="L359">    }</span>
+
+    /**
+     * Gets the transformation time.
+     *
+     * @return the transformation time
+     */
+    public long getTransformationTime() {
+<span class="nc" id="L367">        return transformationTime;</span>
+    }
+
+    /**
+     * Sets the transformation time.
+     *
+     * @param transformationTime the new transformation time
+     */
+    public void setTransformationTime(long transformationTime) {
+<span class="nc" id="L376">        this.transformationTime = transformationTime;</span>
+<span class="nc" id="L377">    }</span>
+    
+    /**
+     * Adds the diagnostic.
+     *
+     * @param diagnostic the diagnostic
+     */
+    public synchronized void addDiagnostic(Diagnostic&lt;?&gt; diagnostic) {
+<span class="fc" id="L385">        compilationDiagnostics.add(diagnostic);</span>
+<span class="fc" id="L386">    }</span>
+
+    /**
+     * Gets the compilation diagnostics.
+     *
+     * @return the compilation diagnostics
+     */
+    public synchronized List&lt;Diagnostic&lt;?&gt;&gt; getCompilationDiagnostics() {
+<span class="fc" id="L394">        return compilationDiagnostics;</span>
+    }
+
+    /**
+     * Sets the compilation diagnostics.
+     *
+     * @param compilationDiagnostics the new compilation diagnostics
+     */
+    public synchronized void setCompilationDiagnostics(List&lt;Diagnostic&lt;?&gt;&gt; compilationDiagnostics) {
+<span class="nc" id="L403">        this.compilationDiagnostics = compilationDiagnostics;</span>
+<span class="nc" id="L404">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

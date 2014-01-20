@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JSXMBenchMark.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.mojo</a> &gt; <span class="el_source">JSXMBenchMark.java</span></div><h1>JSXMBenchMark.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.mojo;
+
+import org.jdom.Namespace;
+import org.jsxm.jsxmcore.util.Various;
+import org.jsxm.maven.plugin.jsxmtool.JSXMFacade;
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Logger;
+
+import com.google.caliper.Benchmark;
+
+/**
+ * @author Konstantinos Margaritis
+ *
+ */
+public final class JSXMBenchMark extends Benchmark  {
+    
+    private int threads;
+    private String consoleLoggerLevel;
+    private String htmlFileLoggerLevel;
+    private String txtFileLoggerLevel;
+    private boolean ansiSupport;
+    private String nameSpace;
+<span class="fc" id="L53">    private String jsxmSpecRootDir = &quot;&quot;;</span>
+<span class="fc" id="L54">    private String testDirectory = &quot;&quot;;</span>
+    
+<span class="fc" id="L56">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+    
+<span class="fc" id="L58">    private JSXMBenchMark() {</span>
+<span class="fc" id="L59">    }</span>
+    
+    /**
+     * The Class LazyHolder.
+     */
+<span class="nc" id="L64">    private static class LazyHolder {</span>
+<span class="fc" id="L65">        private static final JSXMBenchMark INSTANCE = new JSXMBenchMark();</span>
+    }
+    
+    /**
+     * Gets the single instance of JSXMFacade.
+     * 
+     * @return single instance of JSXMFacade
+     */
+    public static JSXMBenchMark getInstance() {
+<span class="fc" id="L74">        return LazyHolder.INSTANCE;</span>
+    }
+
+    /**
+     * Validation bench mark.
+     *
+     * @param threadPoolExecutor the thread pool executor
+     * @param totalExecutions the total executions
+     * @param executions the executions
+     */
+    public void validationBenchMark(String threadPoolExecutor, long[] totalExecutions, int executions) {
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (int i = 0; i &lt; executions; i++) {</span>
+<span class="fc" id="L86">            long validatePhaseStart = System.currentTimeMillis();</span>
+<span class="fc" id="L87">            validate(threadPoolExecutor);</span>
+<span class="fc" id="L88">            long validatePhaseEnd = System.currentTimeMillis();</span>
+<span class="fc" id="L89">            long validatePhase = validatePhaseEnd - validatePhaseStart;</span>
+<span class="fc" id="L90">            logger.debug(&quot;&quot; + validatePhase);</span>
+<span class="fc" id="L91">            totalExecutions[i] = validatePhase;</span>
+        }  
+<span class="fc" id="L93">    }</span>
+
+    /**
+     * Validate.
+     * 
+     * @param multiThreaded
+     *            the multi threaded
+     * @param singleThreadImplementation
+     *            the single thread implementation
+     * @param multiThreadImplementation
+     *            the multi thread implementation
+     * @throws MojoExecutionException
+     *             the mojo execution exception
+     * @throws MojoFailureException
+     *             the mojo failure exception
+     */
+    private void validate(String threadPoolExecutor) {
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if(threads &gt; 0){</span>
+<span class="nc" id="L111">            JSXMFacade.getInstance().overrideThreads(threads);</span>
+        }
+<span class="fc" id="L113">        JSXMFacade.getInstance().setMultiThreaded(threadPoolExecutor,threadPoolExecutor,threadPoolExecutor,threadPoolExecutor,</span>
+                threadPoolExecutor,threadPoolExecutor,threadPoolExecutor);
+
+<span class="fc" id="L116">        JSXMFacade.getInstance().initiateLogging(consoleLoggerLevel,htmlFileLoggerLevel,txtFileLoggerLevel,ansiSupport);</span>
+<span class="fc" id="L117">        Various.getInstance().setNameSpace(Namespace.getNamespace(nameSpace));</span>
+<span class="fc" id="L118">        JSXMFacade.getInstance().validate(jsxmSpecRootDir, testDirectory);</span>
+<span class="fc" id="L119">    }</span>
+
+    /**
+     * @return the threads
+     */
+    public int getThreads() {
+<span class="nc" id="L125">        return threads;</span>
+    }
+
+    /**
+     * @param threads the threads to set
+     */
+    public void setThreads(int threads) {
+<span class="fc" id="L132">        this.threads = threads;</span>
+<span class="fc" id="L133">    }</span>
+
+    /**
+     * @return the consoleLoggerLevel
+     */
+    public String getConsoleLoggerLevel() {
+<span class="nc" id="L139">        return consoleLoggerLevel;</span>
+    }
+
+    /**
+     * @param consoleLoggerLevel the consoleLoggerLevel to set
+     */
+    public void setConsoleLoggerLevel(String consoleLoggerLevel) {
+<span class="fc" id="L146">        this.consoleLoggerLevel = consoleLoggerLevel;</span>
+<span class="fc" id="L147">    }</span>
+
+    /**
+     * @return the htmlFileLoggerLevel
+     */
+    public String getHtmlFileLoggerLevel() {
+<span class="nc" id="L153">        return htmlFileLoggerLevel;</span>
+    }
+
+    /**
+     * @param htmlFileLoggerLevel the htmlFileLoggerLevel to set
+     */
+    public void setHtmlFileLoggerLevel(String htmlFileLoggerLevel) {
+<span class="fc" id="L160">        this.htmlFileLoggerLevel = htmlFileLoggerLevel;</span>
+<span class="fc" id="L161">    }</span>
+
+    /**
+     * @return the txtFileLoggerLevel
+     */
+    public String getTxtFileLoggerLevel() {
+<span class="nc" id="L167">        return txtFileLoggerLevel;</span>
+    }
+
+    /**
+     * @param txtFileLoggerLevel the txtFileLoggerLevel to set
+     */
+    public void setTxtFileLoggerLevel(String txtFileLoggerLevel) {
+<span class="fc" id="L174">        this.txtFileLoggerLevel = txtFileLoggerLevel;</span>
+<span class="fc" id="L175">    }</span>
+
+    /**
+     * @return the ansiSupport
+     */
+    public boolean isAnsiSupport() {
+<span class="nc" id="L181">        return ansiSupport;</span>
+    }
+
+    /**
+     * @param ansiSupport the ansiSupport to set
+     */
+    public void setAnsiSupport(boolean ansiSupport) {
+<span class="fc" id="L188">        this.ansiSupport = ansiSupport;</span>
+<span class="fc" id="L189">    }</span>
+
+    /**
+     * @return the nameSpace
+     */
+    public String getNameSpace() {
+<span class="nc" id="L195">        return nameSpace;</span>
+    }
+
+    /**
+     * @param nameSpace the nameSpace to set
+     */
+    public void setNameSpace(String nameSpace) {
+<span class="fc" id="L202">        this.nameSpace = nameSpace;</span>
+<span class="fc" id="L203">    }</span>
+
+    /**
+     * @return the jsxmSpecRootDir
+     */
+    public String getJsxmSpecRootDir() {
+<span class="nc" id="L209">        return jsxmSpecRootDir;</span>
+    }
+
+    /**
+     * @param jsxmSpecRootDir the jsxmSpecRootDir to set
+     */
+    public void setJsxmSpecRootDir(String jsxmSpecRootDir) {
+<span class="fc" id="L216">        this.jsxmSpecRootDir = jsxmSpecRootDir;</span>
+<span class="fc" id="L217">    }</span>
+
+    /**
+     * @return the testDirectory
+     */
+    public String getTestDirectory() {
+<span class="nc" id="L223">        return testDirectory;</span>
+    }
+
+    /**
+     * @param testDirectory the testDirectory to set
+     */
+    public void setTestDirectory(String testDirectory) {
+<span class="fc" id="L230">        this.testDirectory = testDirectory;</span>
+<span class="fc" id="L231">    }</span>
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

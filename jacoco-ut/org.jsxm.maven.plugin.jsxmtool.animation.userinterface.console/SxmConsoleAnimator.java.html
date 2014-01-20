@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmConsoleAnimator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.animation.userinterface.console</a> &gt; <span class="el_source">SxmConsoleAnimator.java</span></div><h1>SxmConsoleAnimator.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.animation.userinterface.console;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.Namespace;
+import org.jdom.output.XMLOutputter;
+import org.jsxm.jsxmcore.util.Various;
+import org.jsxm.maven.plugin.jsxmtool.animation.core.SxmAbstractAnimator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+<span class="fc" id="L51">public class SxmConsoleAnimator extends SxmAbstractAnimator {</span>
+    
+<span class="fc" id="L53">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+    private static final String RESET_COMMAND = &quot;.r.&quot;;
+    private static final String INPUT_LIST_COMMAND = &quot;.i.&quot;;
+    private static final String QUIT_COMMAND = &quot;.q.&quot;;
+    private static final String HELP_COMMAND = &quot;.h.&quot;;
+    private static final String SILENT_COMMAND = &quot;.s.&quot;;
+    private static final String SAVE_COMMAND = &quot;.log.&quot;;
+    private static final int PRINTER_CHARACTER_LENGHT = 60;
+<span class="fc" id="L61">    private BufferedReader bufferedReader =null;</span>
+<span class="fc" id="L62">    private boolean silent=false;</span>
+    
+    
+    @Override
+    public void interactiveAnimation(String className, String animationDirectory, String specificationDirectory)
+            throws UnsupportedEncodingException {
+<span class="fc" id="L68">        MDC.put(&quot;specificationName&quot;, className);</span>
+<span class="fc" id="L69">        instantiateSXM(className, animationDirectory, specificationDirectory);</span>
+<span class="fc" id="L70">        setBufferedReader(animationInputSource(&quot;&quot;, &quot;console&quot;,animationDirectory)) ;</span>
+<span class="fc" id="L71">        Element rootElement = new Element(&quot;sequence&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L72">        Namespace ns = Namespace.getNamespace(&quot;xsi&quot;, &quot;http://www.w3.org/2001/XMLSchema-instance&quot;);</span>
+<span class="fc" id="L73">        rootElement.addNamespaceDeclaration(ns);</span>
+<span class="fc" id="L74">        rootElement.setAttribute(new Attribute(&quot;schemaLocation&quot;,</span>
+                &quot;http://www.jsxm.org/schema http://www.jsxm.org/schema/input.xsd&quot;, ns));
+<span class="fc" id="L76">        XMLOutputter xmlOutput = new XMLOutputter();</span>
+<span class="fc" id="L77">        Document doc = new Document(rootElement);</span>
+<span class="fc" id="L78">        logger.info(&quot;SXM Animator in interactive mode.\n&quot;);</span>
+<span class="fc" id="L79">        logger.info(&quot;Enter .h. to see a list of commands.\n&quot;);</span>
+<span class="fc" id="L80">        reset();</span>
+<span class="fc" id="L81">        animationOptions(rootElement, doc, className, animationDirectory, xmlOutput);</span>
+<span class="fc" id="L82">        MDC.remove(&quot;specificationName&quot;);</span>
+<span class="fc" id="L83">    }</span>
+    
+    @Override
+    public void animationOptions(Element rootElement, Document doc, String className,
+            String animationDirectory, XMLOutputter xmlOutput) {
+<span class="fc" id="L88">        String str = &quot;&quot;;</span>
+<span class="fc" id="L89">        boolean running = true;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        while (running) {</span>
+<span class="fc" id="L91">            logger.info(&quot;STATE  : &quot; + getFsm().getCurrentState());</span>
+<span class="fc" id="L92">            logger.info(&quot;MEMORY : &quot; + getFsm().memoryString());</span>
+<span class="fc" id="L93">            printSeparator(&quot;-&quot;);</span>
+<span class="fc" id="L94">            logger.info(&quot;Input  : &quot;);</span>
+            try {
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">                if (bufferedReader!= null) {</span>
+<span class="fc" id="L97">                    str = bufferedReader.readLine();</span>
+                }
+<span class="nc" id="L99">            } catch (IOException e) {</span>
+<span class="nc" id="L100">                logger.error(&quot;IOException : &quot;, e);</span>
+<span class="fc" id="L101">            }</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            if (str != null) {</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">                if (str.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L104">                    continue;</span>
+                }
+<span class="fc bfc" id="L106" title="All 2 branches covered.">                if (str.equals(RESET_COMMAND)) {</span>
+<span class="fc" id="L107">                    reset();</span>
+<span class="fc" id="L108">                    rootElement.detach();</span>
+<span class="fc" id="L109">                    rootElement = new Element(&quot;sequence&quot;, Various.getInstance().getNameSpace());</span>
+<span class="fc" id="L110">                    doc = new Document(rootElement);</span>
+<span class="fc" id="L111">                    logger.debug(&quot;New root for document {}&quot;+doc.getRootElement());</span>
+<span class="fc" id="L112">                    continue;</span>
+                }
+<span class="fc bfc" id="L114" title="All 2 branches covered.">                if (str.equals(INPUT_LIST_COMMAND)) {</span>
+<span class="fc" id="L115">                    alphabetPrint();</span>
+<span class="fc" id="L116">                    continue;</span>
+                }
+<span class="fc bfc" id="L118" title="All 2 branches covered.">                if (str.equals(HELP_COMMAND)) {</span>
+<span class="fc" id="L119">                    help();</span>
+<span class="fc" id="L120">                    continue;</span>
+                }
+<span class="fc bfc" id="L122" title="All 2 branches covered.">                if (str.equals(SILENT_COMMAND)) {</span>
+<span class="fc" id="L123">                    getFsm().toggleSilent();</span>
+<span class="fc" id="L124">                    continue;</span>
+                }
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                if (str.equals(QUIT_COMMAND)) {</span>
+<span class="fc" id="L127">                    running = false;</span>
+                }
+<span class="fc bfc" id="L129" title="All 2 branches covered.">                if (str.equals(SAVE_COMMAND)) {</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">                    if(!doc.getRootElement().getChildren().isEmpty()){</span>
+<span class="fc" id="L131">                        save(doc, xmlOutput, className, animationDirectory);</span>
+<span class="fc" id="L132">                        logger.info(className+&quot; animation has been saved&quot;);</span>
+                    }else{
+<span class="fc" id="L134">                        printError(&quot;NO SXM calls to save.&quot;);</span>
+<span class="fc" id="L135">                        printError(&quot;Either the machine has been reseted or the was no animation&quot;);</span>
+                    }
+<span class="fc" id="L137">                    continue;</span>
+                }
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                if (prepareStep(str, rootElement)) {</span>
+<span class="fc" id="L140">                    continue;</span>
+                }
+            } else {
+<span class="fc" id="L143">                running = false;</span>
+<span class="fc" id="L144">                logger.debug(&quot;System.in encountered error on reading. The InputStream is null&quot;);</span>
+            }
+            
+        }
+<span class="fc" id="L148">    }</span>
+    
+    @Override
+    protected void alphabetPrint() {
+<span class="fc" id="L152">        printSeparator(&quot;=&quot;);</span>
+<span class="fc" id="L153">        logger.info(&quot;List of inputs:&quot;);</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        for (String signature : getInputs()) {</span>
+<span class="fc" id="L155">            logger.info(&quot;\t&quot; + signature);</span>
+<span class="fc" id="L156">        }</span>
+<span class="fc" id="L157">        printSeparator(&quot;=&quot;);</span>
+<span class="fc" id="L158">    }</span>
+      
+    @Override
+    protected void help() {
+<span class="fc" id="L162">        printSeparator(&quot;*&quot;);</span>
+<span class="fc" id="L163">        logger.info(&quot;\t&quot; + RESET_COMMAND + &quot;  resets the SXM to its initial state and memory.&quot;);</span>
+<span class="fc" id="L164">        logger.info(&quot;\t&quot; + INPUT_LIST_COMMAND + &quot;  lists available inputs.&quot;);</span>
+<span class="fc" id="L165">        logger.info(&quot;\t&quot; + QUIT_COMMAND + &quot;  quits the animator.&quot;);</span>
+<span class="fc" id="L166">        logger.info(&quot;\t&quot; + HELP_COMMAND + &quot;  displays this list.&quot;);</span>
+<span class="fc" id="L167">        logger.info(&quot;\t&quot; + SILENT_COMMAND + &quot;  (toggle) show less/more details in the animation.&quot;);</span>
+<span class="fc" id="L168">        logger.info(&quot;\t&quot; + SAVE_COMMAND + &quot;  Saves the animation.&quot;);</span>
+<span class="fc" id="L169">        printSeparator(&quot;*&quot;);</span>
+<span class="fc" id="L170">    }</span>
+        
+    @Override
+    protected void printSeparator(String c) {
+<span class="fc" id="L174">        StringBuffer ch = new StringBuffer();</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        for (int i = 0; i &lt; PRINTER_CHARACTER_LENGHT; i++) {</span>
+<span class="fc" id="L176">            ch.append(c);</span>
+        }
+<span class="fc" id="L178">        logger.info(ch.toString());</span>
+<span class="fc" id="L179">    }</span>
+    
+    @Override
+    protected void printInfo(String message) {
+<span class="fc" id="L183">        logger.info(&quot;{}&quot;,message);</span>
+<span class="fc" id="L184">    }</span>
+    
+    /**
+     * Gets the buffered reader.
+     *
+     * @return the buffered reader
+     */
+    public BufferedReader getBufferedReader() {
+<span class="nc" id="L192">        return bufferedReader;</span>
+    }
+
+    /**
+     * Sets the buffered reader.
+     *
+     * @param bufferedReader the new buffered reader
+     */
+    public void setBufferedReader(BufferedReader bufferedReader) {
+<span class="fc" id="L201">        this.bufferedReader = bufferedReader;</span>
+<span class="fc" id="L202">    }</span>
+
+    /**
+     * @return the silent
+     */
+    public boolean isSilent() {
+<span class="nc" id="L208">        return silent;</span>
+    }
+
+    /**
+     * @param silent the silent to set
+     */
+    public void setSilent(boolean silent) {
+<span class="nc" id="L215">        this.silent = silent;</span>
+<span class="nc" id="L216">    }</span>
+    
+    @Override
+    protected void printError(String message) {
+<span class="fc" id="L220">        logger.error(&quot;*** ERROR:&quot;);</span>
+<span class="fc" id="L221">        logger.error(&quot;*** {}&quot;,message);</span>
+<span class="fc" id="L222">        logger.error(&quot;*** &quot;);</span>
+<span class="fc" id="L223">    }</span>
+
+
+    @Override
+    protected void printError(String message, Object obj) {
+<span class="nc" id="L228">        logger.error(&quot;*** ERROR:&quot;);</span>
+<span class="nc" id="L229">        logger.error(&quot;*** {} \n     {}&quot;,message,obj);</span>
+<span class="nc" id="L230">        logger.error(&quot;*** &quot;);   </span>
+<span class="nc" id="L231">    }</span>
+                       
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

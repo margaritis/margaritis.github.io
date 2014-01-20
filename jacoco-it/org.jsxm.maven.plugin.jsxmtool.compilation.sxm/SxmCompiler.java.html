@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SxmCompiler.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jsxm-maven-plugin</a> &gt; <a href="index.html" class="el_package">org.jsxm.maven.plugin.jsxmtool.compilation.sxm</a> &gt; <span class="el_source">SxmCompiler.java</span></div><h1>SxmCompiler.java</h1><pre class="source lang-java linenums">/**
+ * JSXM Maven PLugin CONFIDENTIAL
+ * 
+ *  __________________
+ * 
+ * Unpublished Copyright © 2012-2013 Konstantinos Margaritis, 
+ * All Rights Reserved.
+ * 
+ * NOTICE:  All information contained herein is, and remains the property of Konstantinos Margaritis . 
+ *
+ * The intellectual and technical concepts contained herein are proprietary to the owner
+ * Konstantinos Margaritis and may be covered by U.S and Foreign Patents, patents in process, 
+ * and are protected by trade secret or copyright law. Dissemination of this information or 
+ * reproduction of this material is strictly forbidden unless prior written permission is
+ * obtained from Konstantinos Margaritis. Access to the source code contained herein is hereby 
+ * forbidden to anyone except the owner.Confidentiality and Non-disclosure agreements 
+ * explicitly covering such access.
+ *
+ * The copyright notice above does not evidence any actual or intended publication 
+ * or disclosure  of  this source code, which includes information that is confidential 
+ * and/or proprietary, and is a trade secret, of  Konstantinos Margaritis. ANY REPRODUCTION, 
+ * MODIFICATION, DISTRIBUTION, PUBLIC  PERFORMANCE, OR PUBLIC DISPLAY OF OR THROUGH USE  OF 
+ * THIS  SOURCE CODE  WITHOUT  THE EXPRESS WRITTEN CONSENT OF Konstantinos Margaritis IS STRICTLY PROHIBITED, 
+ * AND IN VIOLATION OF APPLICABLE LAWS AND INTERNATIONAL TREATIES.  THE RECEIPT OR POSSESSION OF  
+ * THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL 
+ * ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.  
+ * 
+ */
+package org.jsxm.maven.plugin.jsxmtool.compilation.sxm;
+
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import org.jsxm.jsxmcore.core.SXMBaseGeneration;
+import org.jsxm.maven.plugin.jsxmtool.core.JSXM;
+import org.jsxm.maven.plugin.jsxmtool.core.Specification;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.JarPathException;
+import org.jsxm.maven.plugin.jsxmtool.runtimeexceptions.SXMCompilationException;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmCompilationUtils;
+import org.jsxm.maven.plugin.jsxmtool.utilities.SxmFileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Konstantinos Margaritis
+ * 
+ */
+public class SxmCompiler {
+    
+<span class="pc" id="L53">    private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());</span>
+<span class="pc" id="L54">    private final String fileSeparator = System.getProperty(&quot;file.separator&quot;);</span>
+<span class="pc" id="L55">    private SXMBaseGeneration sxmB = new SXMBaseGeneration();</span>
+    
+<span class="pc" id="L57">    private boolean definitionFlag = false;</span>
+    private String jsxmSpecRootDir;
+    private String m2Home;
+    private String tempTarget;
+    private String testDirectory;
+    private String mode;
+    private String kInput;
+    private String sxmBaseImports;
+    private String sxmImports;
+    private String sxmBaseInheritance;
+    private Properties kList;
+    private File tempSpec;
+    private List&lt;File&gt; javaFiles;
+    
+    /**
+     * Instantiates a new sxm compiler.
+     */
+<span class="nc" id="L74">    public SxmCompiler() {</span>
+        
+<span class="nc" id="L76">    }</span>
+    
+    /**
+     * Instantiates a new sxm compiler.
+     * 
+     * @param jsxmSpecRootDir
+     *            the jsxm spec root dir
+     * @param m2Home
+     *            the m2 home
+     * @param tempTarget
+     *            the temp target
+     * @param testDirectory
+     *            the test directory
+     * @param mode
+     *            the mode
+     * @param kInput
+     *            the k input
+     * @param sxmBaseImports
+     *            the sxm base imports
+     * @param sxmImports
+     *            the sxm imports
+     * @param sxmBaseInheritance
+     *            the sxm base inheritance
+     * @param javaDirectory
+     *            the java directory
+     * @param kList
+     *            the k list
+     * @param tempSpec
+     *            the temp spec
+     * @param javaFiles
+     *            the java files
+     */
+    public SxmCompiler(String jsxmSpecRootDir, String m2Home, String tempTarget, String testDirectory, String mode,
+            String kInput, String sxmBaseImports, String sxmImports, String sxmBaseInheritance, Properties kList,
+<span class="fc" id="L110">            File tempSpec, List&lt;File&gt; javaFiles) {</span>
+<span class="fc" id="L111">        this.jsxmSpecRootDir = jsxmSpecRootDir;</span>
+<span class="fc" id="L112">        this.m2Home = m2Home;</span>
+<span class="fc" id="L113">        this.tempTarget = tempTarget;</span>
+<span class="fc" id="L114">        this.testDirectory = testDirectory;</span>
+<span class="fc" id="L115">        this.mode = mode;</span>
+<span class="fc" id="L116">        this.kInput = kInput;</span>
+<span class="fc" id="L117">        this.sxmBaseImports = sxmBaseImports;</span>
+<span class="fc" id="L118">        this.sxmImports = sxmImports;</span>
+<span class="fc" id="L119">        this.sxmBaseInheritance = sxmBaseInheritance;</span>
+<span class="fc" id="L120">        this.kList = kList;</span>
+<span class="fc" id="L121">        this.tempSpec = tempSpec;</span>
+<span class="fc" id="L122">        this.javaFiles = javaFiles;</span>
+<span class="fc" id="L123">    }</span>
+    
+    /**
+     * Sets the specification.
+     * 
+     * @return the specification
+     */
+    public Specification setSpecification() {
+<span class="fc" id="L131">        JSXM.getInstance().setSxmBaseImports(sxmBaseImports);</span>
+<span class="fc" id="L132">        JSXM.getInstance().setSxmImports(sxmImports);</span>
+<span class="fc" id="L133">        JSXM.getInstance().setSxmBaseInheritance(sxmBaseInheritance);</span>
+<span class="fc" id="L134">        Specification p = new Specification();</span>
+<span class="fc" id="L135">        p.setName(tempSpec.getName());</span>
+<span class="fc" id="L136">        p.setTempTarget(tempTarget);</span>
+<span class="fc" id="L137">        String jsxmJar = m2Home + fileSeparator + &quot;org&quot; + fileSeparator + &quot;jsxm&quot; + fileSeparator + &quot;jsxmcore&quot;</span>
+                + fileSeparator + JSXM.JSXM_CORE_VERSION + fileSeparator + &quot;jsxmcore-&quot; + JSXM.JSXM_CORE_VERSION
+                + &quot;.jar&quot;;
+<span class="fc" id="L140">        p.setJsxmJarPath(jsxmJar);</span>
+<span class="fc" id="L141">        p.setJsxmSpecRootDir(jsxmSpecRootDir);</span>
+<span class="fc" id="L142">        StringBuilder pathToParent = SxmFileUtils.findPathToParent(tempSpec, &quot;spec&quot;, new StringBuilder());</span>
+<span class="fc" id="L143">        p.setParentDirectory(jsxmSpecRootDir + pathToParent);</span>
+<span class="fc" id="L144">        p.setDirectories();</span>
+<span class="fc" id="L145">        p.setMode(mode);</span>
+<span class="fc" id="L146">        boolean individualK = false;</span>
+<span class="fc" id="L147">        logger.debug(&quot;Extracted source class: &quot;</span>
+                + SxmCompilationUtils.extractSourceClass(tempSpec.getName(), JSXM.SPECIFICATION_EXTENSION_LENGTH));
+<span class="pc bpc" id="L149" title="1 of 6 branches missed.">        if (kList != null</span>
+                &amp;&amp; (!kList.isEmpty() &amp;&amp; kList.containsKey(SxmCompilationUtils.extractSourceClass(tempSpec.getName(),
+                        JSXM.SPECIFICATION_EXTENSION_LENGTH)))) {
+            
+<span class="fc" id="L153">            logger.debug(&quot;\nFound property and showing value&quot;</span>
+                    + kList.getProperty(SxmCompilationUtils.extractSourceClass(tempSpec.getName(),
+                            JSXM.SPECIFICATION_EXTENSION_LENGTH), &quot;&quot;));
+<span class="fc" id="L156">            p.setkInput(kList.getProperty(</span>
+                    SxmCompilationUtils.extractSourceClass(tempSpec.getName(), JSXM.SPECIFICATION_EXTENSION_LENGTH), &quot;&quot;));
+<span class="fc" id="L158">            individualK = true;</span>
+            
+        }
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (!individualK) {</span>
+<span class="fc" id="L162">            p.setkInput(kInput);</span>
+        }
+<span class="fc" id="L164">        p.setJunitMavenTestPath(testDirectory);</span>
+<span class="fc" id="L165">        p.setSpecificationFile(tempSpec);</span>
+<span class="fc" id="L166">        p.setSpecificationPath();</span>
+        
+<span class="fc" id="L168">        SxmCompilationUtils.setImplementationPackage(javaFiles, p, tempSpec);</span>
+        
+<span class="fc" id="L170">        logger.debug(&quot;Compiling : &quot; + tempSpec.getName());</span>
+<span class="fc" id="L171">        setEnviroment(p);</span>
+<span class="fc" id="L172">        return p;</span>
+    }
+    
+    /**
+     * Sets the enviroment.
+     * 
+     * @param p
+     *            the new enviroment
+     */
+    public void setEnviroment(Specification p) {
+        // printState(&quot;Environment Settings&quot;);
+        /*
+         * See revision 548 for non silent environment settings
+         */
+<span class="fc" id="L186">        JSXM.getInstance().setInitialPath(System.getProperty(&quot;java.class.path&quot;));</span>
+<span class="fc" id="L187">        List&lt;String&gt; directoryNames = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L188">        directoryNames.add(p.getTestsDirectory());</span>
+<span class="fc" id="L189">        directoryNames.add(p.getLogsDirectory());</span>
+<span class="fc" id="L190">        directoryNames.add(p.getAnimationDirectory());</span>
+<span class="fc" id="L191">        directoryNames.add(p.getTargetDirectory());</span>
+<span class="fc" id="L192">        directoryNames.add(p.getTempDirectory());</span>
+<span class="fc" id="L193">        directoryNames.add(p.getGeneratedDirectory());</span>
+<span class="fc" id="L194">        directoryNames.add(p.getXjcDirectory());</span>
+<span class="fc" id="L195">        directoryNames.add(p.getXjcGeneratedDirectory());</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        if (p.getJavaImplementation() != null) {</span>
+<span class="fc" id="L197">            directoryNames.add(p.getJunitMavenTestPath() + p.getPackageTest() + fileSeparator);</span>
+        }
+<span class="fc" id="L199">        logger.debug(&quot;Directory names for creation{}&quot;, directoryNames);</span>
+<span class="fc" id="L200">        SxmFileUtils.makeDirectories(directoryNames);</span>
+        
+<span class="fc" id="L202">        List&lt;String&gt; paths = new LinkedList&lt;String&gt;();</span>
+<span class="fc" id="L203">        paths.add(p.getTempDirectory());</span>
+<span class="fc" id="L204">        paths.add(p.getJsxmJarPath());</span>
+<span class="fc" id="L205">        SxmFileUtils.setClassPath(paths);</span>
+<span class="fc" id="L206">        p.setClassName(SxmCompilationUtils.extractSourceClass(p.getSpecificationFile().getName(),</span>
+                JSXM.SPECIFICATION_EXTENSION_LENGTH));
+<span class="fc" id="L208">    }</span>
+    
+    /**
+     * Pre compile.
+     * 
+     * @param isCompileGeneratedJava
+     *            the is compile generated java
+     * @param xjcGeneratedDirectory
+     *            the xjc generated directory
+     * @param tempDirectory
+     *            the temp directory
+     * @param dependentDirectory
+     *            the dependent directory
+     */
+    public void preCompile(boolean isCompileGeneratedJava, String xjcGeneratedDirectory, String tempDirectory,
+            String dependentDirectory) {
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        if (isCompileGeneratedJava) {</span>
+<span class="fc" id="L225">            SxmCompilationUtils.compileDirectory(xjcGeneratedDirectory, tempDirectory);</span>
+        } else {
+<span class="fc" id="L227">            logger.debug(&quot;There are no XSDTypes for compilation&quot;);</span>
+        }
+        
+<span class="fc" id="L230">        final File depeGenDir = new File(dependentDirectory);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if (depeGenDir.isDirectory()) {</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">            if (depeGenDir.listFiles().length &gt; 0) {</span>
+<span class="fc" id="L233">                SxmCompilationUtils.compileDirectory(dependentDirectory, tempDirectory);</span>
+<span class="fc" id="L234">                sxmBaseImports += &quot;\nimport generated.*;\n&quot;;</span>
+<span class="fc" id="L235">                sxmImports += &quot;\nimport generated.*;\n&quot;;</span>
+<span class="fc" id="L236">                logger.info(&quot;---  External classes compiled successfully.&quot;);</span>
+            }
+        } else {
+<span class="fc" id="L239">            logger.debug(&quot;There are no dependent classes for compilation&quot;);</span>
+        }
+<span class="fc" id="L241">    }</span>
+    
+    /**
+     * Sets the parameters.
+     * 
+     * @param mode
+     *            the mode
+     * @param specificationPath
+     *            the specification path
+     * @param tempDirectory
+     *            the temp directory
+     * @param jsxmJarPath
+     *            the jsxm jar path
+     * @param specificationDirectory
+     *            the specification directory
+     */
+    public void setParameters(String mode, String specificationPath, String tempDirectory, String jsxmJarPath,
+            String specificationDirectory) {
+        
+<span class="fc bfc" id="L260" title="All 2 branches covered.">        if (mode.equals(&quot;verbose&quot;)) {</span>
+<span class="fc" id="L261">            sxmB.setVerbose(true);</span>
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        } else if (mode.equals(&quot;overwrite&quot;)) {</span>
+<span class="fc" id="L263">            sxmB.setOverwrite(true);</span>
+        }
+        
+<span class="fc" id="L266">        logger.debug(mode + &quot; mode on&quot;);</span>
+<span class="fc" id="L267">        sxmB.setJavaPath(tempDirectory);</span>
+<span class="fc" id="L268">        logger.debug(&quot;Temporary directory = &quot; + tempDirectory);</span>
+<span class="fc" id="L269">        sxmB.setInputfile(specificationPath);</span>
+<span class="fc" id="L270">        logger.debug(&quot;Input file =&quot; + specificationPath + &quot;\n\n&quot;);</span>
+        
+<span class="fc" id="L272">        final File jarP = new File(jsxmJarPath);</span>
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">        if (jarP.exists()) {</span>
+            try {
+<span class="fc" id="L275">                sxmB.setJarPath(jsxmJarPath);</span>
+<span class="fc" id="L276">                logger.debug(&quot;The jsxm library is located in the &quot; + jsxmJarPath);</span>
+<span class="nc" id="L277">            } catch (Exception e) {</span>
+<span class="nc" id="L278">                logger.error(&quot;Exception : &quot;, e);</span>
+<span class="pc" id="L279">            }</span>
+        } else {
+<span class="nc" id="L281">            logger.error(&quot;---&gt;The jarPath provided does not exist&quot;);</span>
+<span class="nc" id="L282">            throw new JarPathException(&quot;\nJarPathException: JarPath error.&quot;);</span>
+        }
+        
+<span class="fc" id="L285">        sxmB.setDeffilePath(specificationDirectory);</span>
+<span class="fc" id="L286">        final File defFile = new File(specificationDirectory + fileSeparator + &quot;definitions.xml&quot;);</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        if (defFile.exists()) {</span>
+<span class="fc" id="L288">            logger.debug(&quot;The definitions.xml is located in &quot; + defFile.getAbsolutePath());</span>
+<span class="fc" id="L289">            definitionFlag = true;</span>
+        } else {
+<span class="fc" id="L291">            logger.debug(&quot;The path &quot; + defFile.getParent() + &quot; does not contain any definition.\n&quot;);</span>
+        }
+<span class="fc" id="L293">    }</span>
+    
+    /**
+     * Compile sxm base.
+     * 
+     * @param tempDirectory
+     *            the temp directory
+     * @param className
+     *            the class name
+     * @param specificationFile
+     *            the specification file
+     */
+    public void compileSXMBase(String tempDirectory, String className, File specificationFile) {
+<span class="fc" id="L306">        sxmB.parseDefinitions();</span>
+<span class="fc" id="L307">        sxmB.setSxmBaseInheritance(sxmBaseInheritance);</span>
+<span class="fc" id="L308">        sxmB.setSxmBaseImports(sxmBaseImports);</span>
+<span class="fc" id="L309">        sxmB.setSxmImports(sxmImports);</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        if (definitionFlag) {</span>
+            try {
+<span class="fc" id="L312">                List&lt;String&gt; names = new LinkedList&lt;String&gt;();</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">                for (int i = 0; i &lt; sxmB.getDefSXMNames().size(); i++) {</span>
+<span class="fc" id="L314">                    names.add(tempDirectory + &quot;Defsxm_&quot; + sxmB.getDefSXMNames().get(i) + &quot;_Factory.java&quot;);</span>
+<span class="fc" id="L315">                    logger.debug(sxmB.getDefSXMNames().get(i));</span>
+                }
+                
+<span class="fc" id="L318">                SxmCompilationUtils.compileListOfFiles(SxmCompilationUtils.createCompilationList(names), tempDirectory);</span>
+<span class="nc" id="L319">            } catch (Exception e) {</span>
+<span class="nc" id="L320">                logger.error(&quot;Exception : &quot;, e);</span>
+<span class="fc" id="L321">            }</span>
+        }
+<span class="fc" id="L323">        sxmB.generate();</span>
+<span class="pc bpc" id="L324" title="2 of 4 branches missed.">        if (!(new File(tempDirectory + className + &quot;SXM.java&quot;).exists())</span>
+                || !(new File(tempDirectory + className + &quot;SXM_base.java&quot;).exists())) {
+<span class="nc" id="L326">            logger.error(&quot;SXM and SXM_base do not exist. Compilation failed&quot;);</span>
+<span class="nc" id="L327">            throw new SXMCompilationException(&quot;\nSXMCompilationException: Compilation error.&quot;);</span>
+        } else {
+<span class="fc bfc" id="L329" title="All 2 branches covered.">            if (!JSXM.getInstance().isCompileRepast()) {</span>
+<span class="fc" id="L330">                logger.info(&quot;---  Java files from JSXM specification &quot; + specificationFile.getName()</span>
+                        + &quot; generated successfully ---&quot;);
+            } else {
+<span class="fc" id="L333">                logger.info(&quot;---  Java files from REPAST specification &quot; + specificationFile.getName()</span>
+                        + &quot; generated successfully ---&quot;);
+            }
+        }
+<span class="fc" id="L337">    }</span>
+    
+    public boolean isDefinitionFlag() {
+<span class="nc" id="L340">        return definitionFlag;</span>
+    }
+    
+    public void setDefinitionFlag(boolean definitionFlag) {
+<span class="nc" id="L344">        this.definitionFlag = definitionFlag;</span>
+<span class="nc" id="L345">    }</span>
+    
+    public String getSxmBaseImports() {
+<span class="nc" id="L348">        return sxmBaseImports;</span>
+    }
+    
+    public void setSxmBaseImports(String sxmBaseImports) {
+<span class="nc" id="L352">        this.sxmBaseImports = sxmBaseImports;</span>
+<span class="nc" id="L353">    }</span>
+    
+    public String getSxmImports() {
+<span class="nc" id="L356">        return sxmImports;</span>
+    }
+    
+    public void setSxmImports(String sxmImports) {
+<span class="nc" id="L360">        this.sxmImports = sxmImports;</span>
+<span class="nc" id="L361">    }</span>
+    
+    public String getSxmBaseInheritance() {
+<span class="nc" id="L364">        return sxmBaseInheritance;</span>
+    }
+    
+    public void setSxmBaseInheritance(String sxmBaseInheritance) {
+<span class="nc" id="L368">        this.sxmBaseInheritance = sxmBaseInheritance;</span>
+<span class="nc" id="L369">    }</span>
+    
+    public SXMBaseGeneration getSxmB() {
+<span class="nc" id="L372">        return sxmB;</span>
+    }
+    
+    public void setSxmB(SXMBaseGeneration sxmB) {
+<span class="nc" id="L376">        this.sxmB = sxmB;</span>
+<span class="nc" id="L377">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
