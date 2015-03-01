@@ -25,6 +25,18 @@
     <link rel="stylesheet" media="screen" type="text/css" href="/assets/stylesheets/github.css"/>
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', '{{site.data.svbtle.ga_account}}', 'auto');
+      ga('require', 'displayfeatures');
+      ga('require', 'linkid', 'linkid.js');
+      ga('send', 'pageview');
+
+    </script>
     <script data-cfasync="false" type="text/javascript" src="{{page.typekit_url}}"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     {% if site.data.svbtle.enable_kudos && site.data.svbtle.kudos_url %}
@@ -41,7 +53,7 @@
   </head>
   <body style="zoom: 1;">
     <div class="main-container main-view">
-      
+
       <div class="mlogotype is-uppercase">
         <a href="{{site.data.svbtle.website_url}}">{{site.data.svbtle.website_name}}</a>
       </div>
@@ -53,8 +65,8 @@
       <div class="header-container">
         <header class="main-header">
           <figure class="avatar">
-            <a href="{{site.data.svbtle.website_url}}" 
-            style="background-image: url({{site.data.svbtle.profile_picture}});">Profile Picture</a> 
+            <a href="{{site.data.svbtle.website_url}}"
+            style="background-image: url({{site.data.svbtle.profile_picture}});">Profile Picture</a>
           </figure>
           <h1 class="profile-name is-uppercase">
             <a href="{{site.data.svbtle.profile_url}}">{{site.data.svbtle.profile_name}}</a>
@@ -82,7 +94,7 @@
 
       <nav class="pagination" style="display: none;">
         <span class="next">
-          <a href="/page/2" rel="next">Next&nbsp;&nbsp;&nbsp;→</a>
+          <a href="/page/2" rel="next">Next&nbsp;&nbsp;&nbsp;&#8594;</a>
         </span>
       </nav>
 
@@ -104,7 +116,7 @@
       </div>
 
       <div class="copyright tag">
-        © 2014
+        &#169; 2014
       </div>
     </div>
 
@@ -114,8 +126,8 @@
       <nav class="side-nav">
         <div class="top">
           <p>
-						Check more on: 
-            <a href="{{site.data.svbtle.website_url}}"><span class="tag">{{site.data.svbtle.website_name}}</span></a> 
+						Check more on:
+            <a href="{{site.data.svbtle.website_url}}"><span class="tag">{{site.data.svbtle.website_name}}</span></a>
           </p>
           <ul class="nav-profile-links">
             <li class="website">
@@ -145,17 +157,5 @@
     </div>
 
     <script src="/assets/javascripts/js.js"></script>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', '{{site.data.svbtle.ga_account}}']);
-      _gaq.push(['_setDomainName', '{{site.data.svbtle.ga_domain}}']);
-      _gaq.push(['_trackPageview']);
-
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
   </body>
 </html>
