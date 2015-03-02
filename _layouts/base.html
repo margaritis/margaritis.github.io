@@ -55,17 +55,17 @@
     <div class="main-container main-view">
 
       <div class="mlogotype is-uppercase">
-        <a href="{{site.data.svbtle.website_url}}">{{site.data.svbtle.website_name}}</a>
+        <a href="{{site.data.svbtle.blog_url}}">{{site.data.svbtle.blog_name}}</a>
       </div>
 
-      <a href="{{site.data.svbtle.website_url}}" class="home_logotype_link">
-        <h1 class="tag">{{site.data.svbtle.website_name}}</h1>
+      <a href="{{site.data.svbtle.blog_url}}" class="home_logotype_link">
+        <h1 class="tag">{{site.data.svbtle.blog_name}}</h1>
       </a>
 
       <div class="header-container">
         <header class="main-header">
           <figure class="avatar">
-            <a href="{{site.data.svbtle.website_url}}"
+            <a href="{{site.data.svbtle.blog_url}}"
             style="background-image: url({{site.data.svbtle.profile_picture}});">Profile Picture</a>
           </figure>
           <h1 class="profile-name is-uppercase">
@@ -79,8 +79,8 @@
               </a>
             </li>
             <li class="website">
-              <a href="{{site.data.svbtle.website_url}}">
-                <span>{{site.data.svbtle.website_name}}</span>
+              <a href="{{site.data.svbtle.blog_url}}">
+                <span>{{site.data.svbtle.blog_name}}</span>
               </a>
             </li>
           </ul>
@@ -101,19 +101,18 @@
       <div class="line"></div>
 
       <div class="foot_logo">
-        <a href="{{site.data.svbtle.website_url}}"><span class="logo">{{site.data.svbtle.website_url_name}}</span></a>
+        <a href="{{site.data.svbtle.blog_url}}"><span class="logo">{{site.data.svbtle.website_url_name}}</span></a>
       </div>
 
-      <div class="foot_userbar">
-        <a href="#" class="bottom_tagline">
-          <span>{{site.data.svbtle.profile_name}}</span> - {{site.data.svbtle.subtitle}}
-        </a>
-        <a href="https://twitter.com/@{{site.data.svbtle.twitter}}" class="linkout twitter">
-          <i class="fa fa-twitter"></i>
-          @{{site.data.svbtle.twitter}}
-        </a>
-        <a href="{{site.data.svbtle.email_with_subject}}" target="_blank" class="linkout contact">Contact</a>
-      </div>
+      <footer id="blog_foot" class="cf">
+        <ul id="foot_links">
+          <li><a href="https://twitter.com/@{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a></li>
+          <li><a href="{{site.data.svbtle.email_with_subject}}">Contact</a></li>
+          <li><a href="http://{{site.data.svbtle.website_url}}" rel="nofollow">{{site.data.svbtle.website_name}}</a></li>
+        </ul>
+        <figure id="user_foot"><a href="/">Svbtle</a></figure>
+        <h5>{{site.data.svbtle.subtitle}}</h5>
+      </footer>
 
       <div class="copyright tag">
         &#169; 2014
@@ -127,7 +126,7 @@
         <div class="top">
           <p>
 						Check more on:
-            <a href="{{site.data.svbtle.website_url}}"><span class="tag">{{site.data.svbtle.website_name}}</span></a>
+            <a href="{{site.data.svbtle.blog_url}}"><span class="tag">{{site.data.svbtle.blog_name}}</span></a>
           </p>
           <ul class="nav-profile-links">
             <li class="website">
