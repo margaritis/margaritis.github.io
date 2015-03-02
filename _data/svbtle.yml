@@ -2,10 +2,12 @@
 subtitle: "Life would be much easier if i had the source."
 profile_url: http://typeofundefined.io
 profile_name: Konstantinos Margaritis
-website_url: http://typeofundefined.io
+blog_url: "http://typeofundefined.io"
+blog_name: "Dev, startups and harmony"
+website_url: "margaritis.org"
+website_name: "margaritis.org"
 website_url_text: Dev things
 website_url_about: http://margaritis.org/about
-website_name: "Dev, startups and harmony"
 email_with_subject: mailto:kotsos.marga@gmail.com?subject=hi
 twitter: _margaritis
 feed_url: http://feedurlhere.com
