@@ -50,7 +50,27 @@
       </script>
     {% endif %}
   </head>
-  <body style="zoom: 1;">
+  <body style="zoom: 1;" class="overlord blog loaded">
+    <figure id="loading">&nbsp;</figure>
+    <nav id="overlord" class="">
+      <figure id="logo_top" class="">
+        <a href="/">{{site.data.svbtle.blog_url}}</a>
+      </figure>
+      <figure id="hamburger">
+        <a href="#menu" id="hamburger_button">Menu</a>
+      </figure>
+      <ul id="dropdown" class="onblog">
+        <li class="dropdown_message">
+         <a href="http://{{site.data.svbtle.blog_url}}">{{site.data.svbtle.profile_name}}</a>
+        </li>
+        <li><a href="https://twitter.com/{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a></li>
+        <li><a href="http://{{site.data.svbtle.website_url}}" rel="nofollow">{{site.data.svbtle.website_name}}</a></li>
+        <li><a href="{{site.data.svbtle.email_with_subject}}">Contact</a></li>
+        <li><a href="/feed">rss feed</a></li>
+        <li style="margin: 0; padding: 0;"><hr class="overlord_nav"></li>
+      </ul>
+    </nav>
+
     <div class="main-container">
 
       <div class="mlogotype is-uppercase">
@@ -116,42 +136,7 @@
       </footer>
     </div>
 
-    <div class="side-nav-container">
-      <div class="side-nav__button">&nbsp;</div>
-      <h3 class="logotype"><a class="is-uppercase tag" href="#">Menu</a></h3>
-      <nav class="side-nav">
-        <div class="top">
-          <p>
-						Check more on:
-            <a href="{{site.data.svbtle.blog_url}}"><span class="tag">{{site.data.svbtle.blog_name}}</span></a>
-          </p>
-          <ul class="nav-profile-links">
-            <li class="website">
-              <a href="{{site.data.svbtle.profile_url}}">{{site.data.svbtle.profile_name}}</a>
-            </li>
-            <li class="twitter">
-              <a href="http://twitter.com/{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a>
-            </li>
-            <li class="email">
-              <a href="{{site.data.svbtle.email_with_subject}}">Contact</a>
-            </li>
-          </ul>
-        </div>
-        <div class="about">
-          <ul class="about-links">
-            <li>
-              <a href="#">
-                <span class="tag">RSS</span>
-              </a>
-            </li>
-            <li class="magazine">
-              <a href="{{site.data.svbtle.feed_url}}">Feed</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </div>
-
     <script src="/assets/javascripts/js.js"></script>
+    <script src="/assets/javascripts/script.js"></script>
   </body>
 </html>
