@@ -12,6 +12,7 @@ window.Kudos = function Kudos(config){
         this.articleUrl = null;
         this.className = null;
         this.name = null;
+        this.side = false;
 
         for (property in config) {
             if (instance.hasOwnProperty(property) && property !== 'prototype'){
@@ -22,7 +23,7 @@ window.Kudos = function Kudos(config){
         window.Kudos.instances.push(this);
 
         if(!this.element){
-            this.element = $(Kudos.HTML);
+            this.element = !this.side ? $(Kudos.HTML) : $(Kudos.sideHTML);
         }
 
         this.fillingElement = this.element.find('div.filling');
@@ -51,16 +52,25 @@ window.Kudos = function Kudos(config){
 window.Kudos.instances = [];
 
 window.Kudos.HTML =
-    '<figure class="kudo able" id="">\
+    '<figure class="postend kudo able clearfix" id="">\
         <a href="#kudo">\
             <div class="filling">&nbsp;</div>\
-            <div class="kudo-info">\
-                <div class="num">1,172</div>\
-                <div class="txt">Kudos</div>\
-            </div>\
         </a>\
+        <div class="num"></div>\
+        <div class="txt"></div>\
     </figure>\
     '
+
+window.Kudos.sideHTML=
+  '<figure class="side kudo clearfix complete" id="">\
+    <a href="#kudo">\
+      <div class="filling">&nbsp;</div>\
+    </a>\
+    <div class="num"></div>\
+    <div class="txt"></div>\
+  </figure>\
+  '
+
 // set this to send kudos POST requests to this URL
 window.Kudos.KudoURL = null;
 window.Kudos.fetchCount = function () {

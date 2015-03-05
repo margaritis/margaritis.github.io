@@ -1280,11 +1280,6 @@ span#user_extid {
     color: #fff
 }
 
-section.post_content figure.kudo div {
-    margin: 0px;
-    max-width: 100%
-}
-
 div.preview {
     max-width: 600px;
     margin: 0 auto;
@@ -1401,47 +1396,7 @@ div.preview p {
         margin-bottom: 45px
     }
 
-    figure.kudo {
-        max-width: 300px;
-        margin: 0 auto;
-        margin-top: 30px;
-        margin-bottom: 30px;
-        min-height: 100px
-    }
 
-    figure.kudo.side {
-        margin-right: -100px
-    }
-
-    figure.kudo a {
-        width: 80px;
-        height: 80px;
-        border-width: 6px
-    }
-
-    figure.kudo div.filling {
-        width: 72px;
-        height: 72px;
-        top: 4px;
-        left: 4px
-    }
-
-    figure.kudo div.num,figure.kudo div.txt {
-        line-height: 90px
-    }
-
-    figure.kudo div.txt,figure.kudo.activated div.txt {
-        line-height: 100px
-    }
-
-    figure.kudo div.num {
-        font-family: "freight-sans-pro", sans-serif;
-        font-size: 28px;
-        font-weight: 700;
-        color: #000;
-        padding-left: 12px;
-        padding-right: 8px
-    }
 
     nav.pagination {
         padding-left: 10px;
