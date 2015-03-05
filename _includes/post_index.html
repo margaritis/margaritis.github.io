@@ -5,10 +5,9 @@
     {{ content }}
   {% else %}
     {{ post.content }}
-    <div class="button-container">
-      <a class="read-more button" href="{{post.url}}">Continue reading</a>
-    </div>
-    <a class="read-more is-uppercase" href="{{post.url}}">Continue &#8594;</a>
+    <p class="continue_mark">
+      <a class="buttonize outline small" href="{{post.url}}">Continue reading</a>
+    </p>
   {% endif %}
   {% if site.data.svbtle.enable_kudos %}
     <script>
@@ -17,5 +16,5 @@
       });
     </script>
   {% endif %}
-  <hr class="article-separator">
+  <hr class="articlesplit">
 </article>

@@ -1,9 +1,6 @@
-<article class="post detail-view" id="{{post.customid}}">
-  <h1 class="title"><a href="#">{{ post.title }}</a></h1>
-  <a href="#" class="anchor-icon">
-    <i class="fa fa-anchor"></i>
-    <time datetime="{{site.time}}">{{ post.date | date: "%b %d, %Y"  }}</time>
-  </a>
+<article class="post  historical" id="{{post.customid}}">
+  <time datetime="{{site.time}}" class="article_time">{{ post.date | date: "%B %d, %Y"  }}</time>
+  <h1 class="article_title"><a href="#">{{ post.title }}</a></h1>
   {% if content %}
     {{ content }}
   {% else %}
@@ -28,8 +25,8 @@
   {% if post.kudos %}
     <script>
       $(function() {
-        (new Kudos({name:"kudos_"+ Math.floor(new Date().getTime() * Math.random()), articleId:"{{post.customid}}", articleTitle: "{{post.title}}", articleUrl:"{{post.url}}"})).render($("article#{{post.customid}}"));
-        (new Kudos({name:"2kudos_"+ Math.floor(new Date().getTime() * Math.random()), articleId:"{{post.customid}}", articleTitle: "{{post.title}}", articleUrl:"{{post.url}}"})).render($(".group"));
+        (new Kudos({name:"kudos_"+ Math.floor(new Date().getTime() * Math.random()), articleId:"{{post.customid}}", articleTitle: "{{post.title}}", articleUrl:"{{post.url}}",side:false})).render($("article#{{post.customid}}"));
+        (new Kudos({name:"2kudos_"+ Math.floor(new Date().getTime() * Math.random()), articleId:"{{post.customid}}", articleTitle: "{{post.title}}", articleUrl:"{{post.url}}",side:true})).render($("#{{post.customid}}"));
       });
     </script>
   {% endif %}

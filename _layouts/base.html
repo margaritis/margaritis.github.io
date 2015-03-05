@@ -76,8 +76,7 @@
       <figure id="user_logo" class="active"><a href="//{{site.data.svbtle.blog_url}}">{{site.data.svbtle.blog_name}}</a></figure>
       <h2><a href="//{{site.data.svbtle.blog_url}}">{{site.data.svbtle.blog_name}}</a></h2>
       <h4><span class="name_head">by</span> {{site.data.svbtle.profile_name}}</h4>
-      <h3>JavaScript programmer, O'Reilly author.
-    </h3>
+      <h3>{{site.data.svbtle.subtitle}}</h3>
       <ul id="user_links">
         <li><a href="https://twitter.com/{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a></li>
         <li><a href="{{site.data.svbtle.email_with_subject}}">Contact</a></li>
@@ -86,41 +85,8 @@
     </header>
     <div class="main-container main-view">
 
-      <div class="mlogotype is-uppercase">
-        <a href="{{site.data.svbtle.blog_url}}">{{site.data.svbtle.blog_name}}</a>
-      </div>
-
-      <a href="{{site.data.svbtle.blog_url}}" class="home_logotype_link">
-        <h1 class="tag">{{site.data.svbtle.blog_name}}</h1>
-      </a>
-
-      <div class="header-container">
-        <header class="main-header">
-          <figure class="avatar">
-            <a href="{{site.data.svbtle.blog_url}}"
-            style="background-image: url({{site.data.svbtle.profile_picture}});">Profile Picture</a>
-          </figure>
-          <h1 class="profile-name is-uppercase">
-            <a href="{{site.data.svbtle.profile_url}}">{{site.data.svbtle.profile_name}}</a>
-          </h1>
-          <h2 class="subtitle">{{site.data.svbtle.subtitle}}</h2>
-          <ul class="profile-links">
-            <li class="twitter">
-              <a href="http://twitter.com/{{site.data.svbtle.twitter}}">
-                <span>@{{site.data.svbtle.twitter}}</span>
-              </a>
-            </li>
-            <li class="website">
-              <a href="{{site.data.svbtle.blog_url}}">
-                <span>{{site.data.svbtle.blog_name}}</span>
-              </a>
-            </li>
-          </ul>
-        </header>
-      </div>
-
-      <div class="posts-container">
-        <span class="tag read-first is-uppercase">read this first</span>
+      <div id="container" class="blog user_post">
+        <h6 class="separator_title read_first">read this first</h6>
         {{content}}
       </div>
 
@@ -129,6 +95,19 @@
           <a href="/page/2" rel="next">Next&nbsp;&nbsp;&nbsp;&#8594;</a>
         </span>
       </nav>
+
+      <nav class="pagination" style="display: none;">
+        <span class="page current">1</span>
+        <span class="page"><a href="/page/2" rel="next">2</a></span>
+        <span class="page"><a href="/page/3">3</a></span>
+        <span class="page"><a href="/page/4">4</a></span>
+        <span class="page"><a href="/page/5">5</a></span>
+        <span class="page gap"></span>
+        <span class="next"><a href="/page/2" rel="next">Next&nbsp;&nbsp;→</a></span>
+        <span class="last"><a href="/page/6">Last</a></span>
+      </nav>
+
+
 
       <div class="line"></div>
 
@@ -149,42 +128,6 @@
       <footer id="foot">
         <figure id="logo_foot"><a href="">&#169; 2014</a></figure>
       </footer>
-    </div>
-
-    <div class="side-nav-container">
-      <div class="side-nav__button">&nbsp;</div>
-      <h3 class="logotype"><a class="is-uppercase tag" href="#">Menu</a></h3>
-      <nav class="side-nav">
-        <div class="top">
-          <p>
-						Check more on:
-            <a href="{{site.data.svbtle.blog_url}}"><span class="tag">{{site.data.svbtle.blog_name}}</span></a>
-          </p>
-          <ul class="nav-profile-links">
-            <li class="website">
-              <a href="{{site.data.svbtle.profile_url}}">{{site.data.svbtle.profile_name}}</a>
-            </li>
-            <li class="twitter">
-              <a href="http://twitter.com/{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a>
-            </li>
-            <li class="email">
-              <a href="{{site.data.svbtle.email_with_subject}}">Contact</a>
-            </li>
-          </ul>
-        </div>
-        <div class="about">
-          <ul class="about-links">
-            <li>
-              <a href="#">
-                <span class="tag">RSS</span>
-              </a>
-            </li>
-            <li class="magazine">
-              <a href="{{site.data.svbtle.feed_url}}">Feed</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
     </div>
 
     <script src="/assets/javascripts/js.js"></script>

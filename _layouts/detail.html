@@ -75,78 +75,30 @@
       <figure id="user_logo" class="active"><a href="//{{site.data.svbtle.blog_url}}">{{site.data.svbtle.blog_name}}</a></figure>
       <h2><a href="//{{site.data.svbtle.blog_url}}">{{site.data.svbtle.blog_name}}</a></h2>
       <h4><span class="name_head">by</span> {{site.data.svbtle.profile_name}}</h4>
-      <h3>JavaScript programmer, O'Reilly author.
-    </h3>
+      <h3>{{site.data.svbtle.subtitle}}</h3>
       <ul id="user_links">
         <li><a href="https://twitter.com/{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a></li>
         <li><a href="{{site.data.svbtle.email_with_subject}}">Contact</a></li>
         <li><a href="http://{{site.data.svbtle.website_url}}" rel="nofollow">{{site.data.svbtle.website_name}}</a></li>
       </ul>
     </header>
-    <div class="main-container">
+    <section id="container" class="blog user_home">
+      {{content}}
+    </section>
 
-      <div class="mlogotype is-uppercase">
-        <a href="{{site.data.svbtle.blog_url}}">{{site.data.svbtle.blog_name}}</a>
-      </div>
+    <footer id="blog_foot" class="cf">
+      <ul id="foot_links">
+        <li><a href="https://twitter.com/@{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a></li>
+        <li><a href="{{site.data.svbtle.email_with_subject}}">Contact</a></li>
+        <li><a href="http://{{site.data.svbtle.website_url}}" rel="nofollow">{{site.data.svbtle.website_name}}</a></li>
+      </ul>
+      <figure id="user_foot"><a href="/">Svbtle</a></figure>
+      <h5>{{site.data.svbtle.subtitle}}</h5>
+    </footer>
 
-      <a href="{{site.data.svbtle.blog_url}}" class="home_logotype_link">
-        <h1 class="tag">{{site.data.svbtle.blog_name}}</h1>
-      </a>
-
-      <div class="header-container detail-view">
-        <header class="main-header">
-          <figure class="avatar">
-            <a href="{{site.data.svbtle.blog_url}}"
-            style="background-image: url({{site.data.svbtle.profile_picture}});">Profile Picture</a>
-          </figure>
-          <h1 class="profile-name is-uppercase">
-            <a href="{{site.data.svbtle.profile_url}}">{{site.data.svbtle.profile_name}}</a>
-          </h1>
-        </header>
-      </div>
-
-      <div class="posts-container detail-view">
-        {{content}}
-      </div>
-
-      <div class="line hide-text">Separator line</div>
-
-      <!-- Next article preview -->
-      <div class="next-article" style="display: none;">
-        <a href="#">
-          <p class="read-next tag is-uppercase">Read this next:</p>
-          <p class="next-article__title">Protocol and Language</p>
-          <div class="next-article__content">
-            <p>.</p>
-          </div>
-        </a>
-      </div>
-      <!-- Finish / Feature on process-->
-
-      <div class="line hide-text">Separator line</div>
-
-      <div class="foot_logo">
-        <a href="{{site.data.svbtle.blog_url}}"><span class="logo">{{site.data.svbtle.website_url_name}}</span></a>
-      </div>
-
-      <div class="foot_logo right">
-        <a href="/"><span class="link">Full Blog >></span></a>
-      </div>
-
-      <footer id="blog_foot" class="cf">
-        <ul id="foot_links">
-          <li><a href="https://twitter.com/@{{site.data.svbtle.twitter}}">@{{site.data.svbtle.twitter}}</a></li>
-          <li><a href="{{site.data.svbtle.email_with_subject}}">Contact</a></li>
-          <li><a href="http://{{site.data.svbtle.website_url}}" rel="nofollow">{{site.data.svbtle.website_name}}</a></li>
-        </ul>
-        <figure id="user_foot"><a href="/">Svbtle</a></figure>
-        <h5>{{site.data.svbtle.subtitle}}</h5>
-      </footer>
-
-      <footer id="foot">
-        <figure id="logo_foot"><a href="">&#169; 2014</a></figure>
-      </footer>
-    </div>
+    <footer id="foot">
+      <figure id="logo_foot"><a href="">&#169; 2015</a></figure>
+    </footer>
 
     <script src="/assets/javascripts/js.js"></script>
     <script src="/assets/javascripts/script.js"></script>
